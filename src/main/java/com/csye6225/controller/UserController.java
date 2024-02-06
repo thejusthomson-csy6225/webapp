@@ -1,14 +1,13 @@
 package com.csye6225.controller;
 
-import com.csye6225.Security.SecurityHandler;
+import com.csye6225.model.UserResponseDTO;
+import com.csye6225.security.SecurityHandler;
 import com.csye6225.model.User;
 import com.csye6225.service.UserService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/v1/user")
@@ -23,11 +22,13 @@ public class UserController {
     }
 
     @GetMapping("/self")
-    public ResponseEntity<Object> getAllUserDetails(@RequestHeader("Authorization") String auth) {
+    public ResponseEntity<Object> getUserDetails(@RequestHeader("Authorization") String auth) {
         if (securityHandler.isValidUser(auth)) {
-            Optional<User> user = userService.getUserDetails(securityHandler.returnUserDetails(auth));
-            user.ifPresent(value -> value.setPassword(null));
-            return ResponseEntity.ok().body(user);
+            UserResponseDTO user = userService.getUserDetailsAsDTO(securityHandler.returnUsername(auth));
+            return ResponseEntity
+                    .ok()
+                    .cacheControl(CacheControl.noCache().mustRevalidate())
+                    .body(user);
         }
         else
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -40,12 +41,21 @@ public class UserController {
         savedUser.setPassword(null);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .cacheControl(CacheControl.noCache())
+                .cacheControl(CacheControl.noCache().mustRevalidate())
                 .body(savedUser);
     }
 
-//    @GetMapping
-//    public ResponseEntity<Object> updateUserDetails(@RequestParam Map<String, String> id, @RequestBody User updateUser) {
-//
-//    }
+    @PutMapping("/self")
+    public ResponseEntity<Object> updateUserDetails(@RequestHeader("Authorization") String auth,@RequestBody User updateUser) {
+        if (securityHandler.isValidUser(auth)) {
+            updateUser.setUsername(securityHandler.returnUsername(auth));
+            userService.updateUserDetails(updateUser);
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .cacheControl(CacheControl.noCache().mustRevalidate())
+                    .build();
+        }
+        else
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
 }
