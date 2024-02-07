@@ -59,7 +59,7 @@ The project includes GitHub Actions workflow for:
 
 ## Prerequisites for Building and Deploying Locally
 
-# Prerequisites for Building and Deploying Locally
+## Prerequisites for Building and Deploying Locally
 
 Before you proceed with building and deploying the application locally, make sure you have the following prerequisites:
 
@@ -67,7 +67,6 @@ Before you proceed with building and deploying the application locally, make sur
     - Install JDK 17.
 
       ```bash
-      # Example command for Linux/Mac
       sudo apt-get install openjdk-17-jdk
       ```
 
