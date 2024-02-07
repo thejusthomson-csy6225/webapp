@@ -89,7 +89,7 @@ Before you proceed with building and deploying the application locally, make sur
       ```
 
 4. **Clone the Repository:**
-    - Clone the repository using the following command:
+    - Clone the repository using SSH with the following command:
 
       ```bash
       git clone git@github.com:thejusthomson-csy6225/webapp.git
