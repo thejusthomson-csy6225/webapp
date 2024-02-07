@@ -19,12 +19,17 @@ public class CheckConnectionController {
     }
 
     @RequestMapping(method = {RequestMethod.HEAD, RequestMethod.OPTIONS})
-    public ResponseEntity<Void> handleHeadAndOptionsMethods() {
+    public ResponseEntity<Object> handleHeadAndOptionsMethods(@RequestHeader(required = false,value = "Authorization")String auth) {
         HttpHeaders headers = new HttpHeaders();
         headers.setCacheControl(CacheControl.noCache().mustRevalidate());
         headers.setPragma("no-cache");
         headers.add("X-Content-Type-Options", "nosniff");
-
+        if(auth != null && !auth.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .body("Authorization is invalid");
+        }
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .headers(headers)
@@ -32,12 +37,17 @@ public class CheckConnectionController {
     }
 
     @GetMapping
-    public ResponseEntity<String> checkConnection(@RequestBody(required = false) String body, @RequestParam(required = false) Map<String,String> params) {
+    public ResponseEntity<String> checkConnection(@RequestBody(required = false) String body, @RequestParam(required = false) Map<String,String> params, @RequestHeader(required = false,value = "Authorization")String auth) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Pragma", "no-cache");
         headers.set("X-Content-Type-Options", "nosniff");
         headers.setCacheControl(CacheControl.noCache().mustRevalidate());
         try {
+            if(auth != null && !auth.isEmpty()) {
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body("Authorization is invalid");
+            }
             if ((params != null && !params.isEmpty()) || (body != null && !body.isEmpty())) {
                 return ResponseEntity
                         .badRequest()
