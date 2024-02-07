@@ -49,5 +49,6 @@ public class UserService {
             SecurityHandler securityHandler = new SecurityHandler(userRepository);
             existingUser.setPassword(securityHandler.passwordEncoder(updateUser.getPassword()));
         }
+        userRepository.save(existingUser);
     }
 }
