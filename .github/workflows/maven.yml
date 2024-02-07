@@ -2,8 +2,6 @@ name: Java CI with Maven
 
 on:
   pull_request:
-    types:
-      - opened
     branches:
       - 'main'
 
@@ -17,6 +15,7 @@ jobs:
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
+          token: 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
           java-version: '17'
           distribution: 'temurin'
           cache: maven
