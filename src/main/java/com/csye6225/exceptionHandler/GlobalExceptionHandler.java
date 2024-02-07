@@ -1,5 +1,6 @@
 package com.csye6225.exceptionHandler;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .headers(headers)
                 .build();
+    }
+
+    @ExceptionHandler(value = BadRequestException.class)
+    public ResponseEntity<Object> handleBadRequestException() {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .build();
     }
 
 }

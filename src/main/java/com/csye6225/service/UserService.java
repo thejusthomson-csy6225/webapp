@@ -4,6 +4,8 @@ import com.csye6225.model.User;
 import com.csye6225.model.UserResponseDTO;
 import com.csye6225.repository.UserRepository;
 import com.csye6225.security.SecurityHandler;
+import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,15 +25,19 @@ public class UserService {
         return mapper.map(user, UserResponseDTO.class);
     }
 
-    public User getUserDetails(String username) {
-        return userRepository.findByUsername(username);
+    public UserResponseDTO insertUserDetails(User user) throws BadRequestException {
+        boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
+        if(EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
+            User savedUser = userRepository.save(user);
+            ModelMapper mapper = new ModelMapper();
+            return mapper.map(savedUser, UserResponseDTO.class);
+        }
+        else {
+            throw new BadRequestException("Username is not valid/User already exists. Has to be unique and a valid email id");
+        }
     }
 
-    public User insertUserDetails(User user) {
-        return userRepository.save(user);
-    }
-
-    public UserResponseDTO updateUserDetails(User updateUser) {
+    public void updateUserDetails(User updateUser) {
         User existingUser = userRepository.findByUsername(updateUser.getUsername());
         if(null != updateUser.getFirstName() && !updateUser.getFirstName().isBlank()) {
             existingUser.setFirstName(updateUser.getFirstName());
@@ -43,7 +49,5 @@ public class UserService {
             SecurityHandler securityHandler = new SecurityHandler(userRepository);
             existingUser.setPassword(securityHandler.passwordEncoder(updateUser.getPassword()));
         }
-        ModelMapper mapper = new ModelMapper();
-        return mapper.map(userRepository.save(existingUser), UserResponseDTO.class);
     }
 }

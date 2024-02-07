@@ -1,6 +1,5 @@
 package com.csye6225.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -24,20 +23,17 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "username", unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(name = "account_created", updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date accountCreated;
 
     @Column(name = "account_updated")
-    @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Date accountUpdated;
 }
