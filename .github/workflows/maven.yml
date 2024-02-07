@@ -10,7 +10,7 @@ jobs:
     name: Compiling and testing Maven
     runs-on: ubuntu-latest
     env:
-      MYSQL_URL: ${{secrets.MYSQL_URL}}
+      MYSQL_DATABASE_URL: ${{secrets.MYSQL_URL}}
       MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
       MYSQL_USERNAME: ${{secrets.MYSQL_USERNAME}}
       MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
