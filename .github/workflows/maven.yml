@@ -10,10 +10,10 @@ jobs:
     name: Compiling and testing Maven
     runs-on: ubuntu-latest
     env:
-      MYSQL_DATABASE_URL: ${{secrets.MYSQL_URL}}
+      MYSQL_DATABASE_URL: ${{secrets.MYSQL_DATABASE_URL}}
       MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
-      MYSQL_USERNAME: ${{secrets.MYSQL_USERNAME}}
-      MYSQL_PASSWORD: ${{secrets.MYSQL_PASSWORD}}
+      MYSQL_DATABASE_USERNAME: ${{secrets.MYSQL_DATABASE_USERNAME}}
+      MYSQL_DATABASE_PASSWORD: ${{secrets.MYSQL_DATABASE_PASSWORD}}
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
