@@ -56,3 +56,55 @@ As a user, you can get your account information. The response payload returns al
 The project includes GitHub Actions workflow for:
 - Simple checks (compile code) for each pull request.
 - Preventing pull request merges if the workflow execution fails.
+
+## Prerequisites for Building and Deploying Locally
+
+# Prerequisites for Building and Deploying Locally
+
+Before you proceed with building and deploying the application locally, make sure you have the following prerequisites:
+
+1. **Java Development Kit (JDK):**
+    - Install JDK 17.
+
+      ```bash
+      # Example command for Linux/Mac
+      sudo apt-get install openjdk-17-jdk
+      ```
+
+2. **Database Configuration:**
+    - Configure your MySQL database settings in `application.properties`. Make sure you have a MySQL database instance running.
+
+      ```properties
+      # Example MySQL Configuration
+      spring.datasource.url=jdbc:mysql://localhost:3306/your_database_name
+      spring.datasource.username=your_mysql_username
+      spring.datasource.password=your_mysql_password
+      ```
+
+3. **Maven Build Tool:**
+    - The project uses Maven. If you don't have Maven installed globally, you can use the provided Maven Wrapper (`./mvnw`) included in the project.
+
+      ```bash
+      # Example command to set up Maven Wrapper
+      chmod +x mvnw
+      ```
+
+4. **Clone the Repository:**
+    - Clone the repository using the following command:
+
+      ```bash
+      git clone git@github.com:thejusthomson-csy6225/webapp.git
+      ```
+
+5. **Run with Maven:**
+    - Navigate to the project directory and use Maven to run the application:
+
+      ```bash
+      cd webapp
+      ./mvnw spring-boot:run
+      ```
+
+   If you encounter permission issues with the Maven Wrapper, make it executable:
+
+   ```bash
+   chmod +x mvnw
