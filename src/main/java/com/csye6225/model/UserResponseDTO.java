@@ -7,6 +7,8 @@ import java.util.Date;
 @Data
 public class UserResponseDTO {
 
+    private String id;
+
     private String firstName;
 
     private String lastName;
