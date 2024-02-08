@@ -28,7 +28,13 @@ public class UserController {
     }
 
     @GetMapping("/self")
-    public ResponseEntity<Object> getUserDetails(@RequestHeader("Authorization") String auth) {
+    public ResponseEntity<Object> getUserDetails(@RequestHeader("Authorization") String auth, @RequestBody(required = false) String userReq) {
+        if(userReq != null) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .build();
+        }
         if (securityHandler.isValidUser(auth)) {
             UserResponseDTO user = userService.getUserDetailsAsDTO(securityHandler.returnUsername(auth));
             return ResponseEntity
