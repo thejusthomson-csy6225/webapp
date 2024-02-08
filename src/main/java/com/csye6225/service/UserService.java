@@ -28,9 +28,16 @@ public class UserService {
     public UserResponseDTO insertUserDetails(User user) throws BadRequestException {
         boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
         if(EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
-            User savedUser = userRepository.save(user);
-            ModelMapper mapper = new ModelMapper();
-            return mapper.map(savedUser, UserResponseDTO.class);
+            if(null != user.getPassword() && !user.getPassword().isBlank()) {
+                SecurityHandler securityHandler = new SecurityHandler(userRepository);
+                user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
+                User savedUser = userRepository.save(user);
+                ModelMapper mapper = new ModelMapper();
+                return mapper.map(savedUser, UserResponseDTO.class);
+            }
+            else {
+                throw new BadRequestException("Password cannot be null or blank");
+            }
         }
         else {
             throw new BadRequestException("Username is not valid/User already exists. Has to be unique and a valid email id");

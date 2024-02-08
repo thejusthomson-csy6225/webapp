@@ -4,6 +4,7 @@ package com.csye6225.security;
 import com.csye6225.model.User;
 import com.csye6225.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +26,17 @@ public class SecurityHandler {
     public boolean isValidUser(String auth) {
         String base64String = auth.substring("Basic ".length());
         String[] parts = decodeBase64(base64String);
-        String username = parts[0];
-        String password = parts[1];
-        User loggedUser = userRepository.findByUsername(username);
-        return loggedUser != null
-                && loggedUser.getUsername().equals(username)
-                && bCryptPasswordEncoder.matches(password, loggedUser.getPassword());
+        if(parts.length > 1) {
+            String username = parts[0];
+            String password = parts[1];
+            User loggedUser = userRepository.findByUsername(username);
+            return loggedUser != null
+                    && loggedUser.getUsername().equals(username)
+                    && bCryptPasswordEncoder.matches(password, loggedUser.getPassword());
+        }
+        else {
+            throw new UsernameNotFoundException("Username not found");
+        }
     }
 
     public String returnUsername(String auth) {

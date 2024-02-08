@@ -41,9 +41,8 @@ public class UserController {
     }
 
     @PostMapping()
-    public ResponseEntity<Object> insertUserDetails(@RequestHeader(value = "Authorization",required = false) String auth,
-                                                    @RequestBody User user) {
-        user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
+    public ResponseEntity<Object> insertUserDetails(@RequestHeader(value = "Authorization",required = false)
+                                                        String auth, @RequestBody User user) {
         try {
             if(auth != null && !auth.isEmpty()) {
                 return ResponseEntity
@@ -86,5 +85,19 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
                     .build();
+    }
+
+    @RequestMapping(method = {RequestMethod.HEAD, RequestMethod.OPTIONS}, path = {"", "/self"})
+    public ResponseEntity<Object> handleHeadAndOptionsMethods(@RequestHeader(required = false,value = "Authorization")String auth) {
+        if(auth != null && !auth.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .body("Authorization is invalid");
+        }
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .headers(headers)
+                .build();
     }
 }
