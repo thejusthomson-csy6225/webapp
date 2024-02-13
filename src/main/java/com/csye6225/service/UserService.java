@@ -29,11 +29,17 @@ public class UserService {
         boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
         if(EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
             if(null != user.getPassword() && !user.getPassword().isBlank()) {
-                SecurityHandler securityHandler = new SecurityHandler(userRepository);
-                user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
-                User savedUser = userRepository.save(user);
-                ModelMapper mapper = new ModelMapper();
-                return mapper.map(savedUser, UserResponseDTO.class);
+                if(null != user.getFirstName() && !user.getFirstName().isBlank()
+                        && null != user.getLastName() && !user.getLastName().isBlank()) {
+                    SecurityHandler securityHandler = new SecurityHandler(userRepository);
+                    user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
+                    User savedUser = userRepository.save(user);
+                    ModelMapper mapper = new ModelMapper();
+                    return mapper.map(savedUser, UserResponseDTO.class);
+                }
+                else {
+                    throw new BadRequestException("Firstname and/or Lastname cannot be null or blank");
+                }
             }
             else {
                 throw new BadRequestException("Password cannot be null or blank");
