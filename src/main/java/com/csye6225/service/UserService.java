@@ -29,8 +29,7 @@ public class UserService {
         boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
         if(EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
             if(null != user.getPassword() && !user.getPassword().isBlank()) {
-                if(null != user.getFirstName() && !user.getFirstName().isBlank()
-                        && null != user.getLastName() && !user.getLastName().isBlank()) {
+                if(isValidPostRequest(user)) {
                     SecurityHandler securityHandler = new SecurityHandler(userRepository);
                     user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
                     User savedUser = userRepository.save(user);
@@ -38,7 +37,7 @@ public class UserService {
                     return mapper.map(savedUser, UserResponseDTO.class);
                 }
                 else {
-                    throw new BadRequestException("Firstname and/or Lastname cannot be null or blank");
+                    throw new BadRequestException("Invalid request");
                 }
             }
             else {
@@ -50,7 +49,10 @@ public class UserService {
         }
     }
 
-    public void updateUserDetails(User updateUser) {
+    public void updateUserDetails(User updateUser) throws BadRequestException {
+        if (!isValidPutRequest(updateUser)) {
+            throw new BadRequestException("Body is blank");
+        }
         User existingUser = userRepository.findByUsername(updateUser.getUsername());
         if(null != updateUser.getFirstName() && !updateUser.getFirstName().isBlank()) {
             existingUser.setFirstName(updateUser.getFirstName());
@@ -63,5 +65,23 @@ public class UserService {
             existingUser.setPassword(securityHandler.passwordEncoder(updateUser.getPassword()));
         }
         userRepository.save(existingUser);
+    }
+
+    public void deleteUser(String userName) {
+        User toDelete = userRepository.findByUsername(userName);
+        userRepository.delete(toDelete);
+    }
+
+    public boolean isValidPostRequest(User user) {
+        return null != user.getFirstName() && !user.getFirstName().isBlank()
+                && null != user.getLastName() && !user.getLastName().isBlank()
+                && user.getId() == null && user.getAccountCreated() == null
+                && user.getAccountUpdated() == null;
+    }
+
+    public boolean isValidPutRequest(User user) {
+        return user.getFirstName() == null
+                && user.getLastName() == null
+                && user.getPassword() == null;
     }
 }

@@ -61,7 +61,7 @@ public class UserController {
                         .status(HttpStatus.CREATED)
                         .headers(headers)
                         .body(savedUser);
-        } catch (BadRequestException be) {
+        } catch (Exception be) {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .headers(headers)
@@ -72,25 +72,31 @@ public class UserController {
 
     @PutMapping("/self")
     public ResponseEntity<Object> updateUserDetails(@RequestHeader("Authorization") String auth,@RequestBody User updateUser) {
-        if (securityHandler.isValidUser(auth)) {
-            if(updateUser!=null && updateUser.getUsername()==null && updateUser.getAccountCreated() == null && updateUser.getAccountUpdated() == null) {
-                updateUser.setUsername(securityHandler.returnUsername(auth));
-                userService.updateUserDetails(updateUser);
+        try {
+            if (securityHandler.isValidUser(auth)) {
+                if (updateUser != null && updateUser.getUsername() == null && updateUser.getAccountCreated() == null && updateUser.getAccountUpdated() == null) {
+                    updateUser.setUsername(securityHandler.returnUsername(auth));
+                    userService.updateUserDetails(updateUser);
+                    return ResponseEntity
+                            .status(HttpStatus.NO_CONTENT)
+                            .headers(headers)
+                            .build();
+                } else {
+                    return ResponseEntity
+                            .status(HttpStatus.BAD_REQUEST)
+                            .body("Invalid request");
+                }
+            } else
                 return ResponseEntity
-                        .status(HttpStatus.NO_CONTENT)
-                        .headers(headers)
+                        .status(HttpStatus.UNAUTHORIZED)
                         .build();
-            }
-            else {
-                return ResponseEntity
-                        .status(HttpStatus.BAD_REQUEST)
-                        .body("Invalid request");
-            }
         }
-        else
+        catch (Exception e) {
             return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .build();
+                    .status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .body(e.getCause());
+        }
     }
 
     @RequestMapping(method = {RequestMethod.HEAD, RequestMethod.OPTIONS}, path = {"", "/self"})
@@ -104,6 +110,14 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .headers(headers)
+                .build();
+    }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<Object> deleteUserName(@PathVariable String username) {
+        userService.deleteUser(username);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 }
