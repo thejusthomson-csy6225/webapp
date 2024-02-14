@@ -3,77 +3,119 @@ package com.csye6225.controller;
 import com.csye6225.model.User;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.After;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc
 class UserControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @LocalServerPort
+    private int port;
+    @PostConstruct
+    void setUp() {
+        RestAssured.port = port;
+        RestAssured.baseURI = "http://localhost/v1/user";
+    }
 
     @Test
     void insertUserDetails_Success() throws Exception {
-        mockMvc.perform(post("/v1/user")
-                .content(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null)))
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isCreated());
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null)))
+                .when()
+                .post()
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(201);
+
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("thejus@gmail.com", "password");
-        mockMvc.perform(get("/v1/user/self")
-                .headers(headers))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.username").value("thejus@gmail.com"))
-                .andExpect(jsonPath("$.firstName").value("Thejus"))
-                .andExpect(jsonPath("$.lastName").value("Thomson"))
-        ;
 
-        mockMvc.perform(delete("/v1/user/{username}", "thejus@gmail.com")
-        ).andExpect(status().isNoContent());
+        given()
+                .headers(headers)
+                        .when()
+                .get("/self")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(200)
+                .body("username",equalTo("thejus@gmail.com"))
+                .body("firstName",equalTo("Thejus"))
+                .body("lastName",equalTo("Thomson"));
 
+
+        given()
+                .when()
+                .delete("/{username}","thejus@gmail.com")
+                .then()
+                .statusCode(204);
     }
 
     @Test
     void updateUserDetails_Success() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("thejus@gmail.com", "password");
-        mockMvc.perform(post("/v1/user")
-                .content(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null)))
-                .contentType(MediaType.APPLICATION_JSON)
-        ).andExpect(status().isCreated());
 
-        mockMvc.perform(put("/v1/user/self")
-                .content(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap",null, null, null)))
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isCreated());
+        given()
+                .contentType(ContentType.JSON)
+                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null)))
+                .when()
+                .post()
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(201);
+
+
+        given()
+                .headers(headers)
+                .contentType(ContentType.JSON)
+                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap",null, null, null)))
+                .log()
+                .all()
+                .when()
+                .put("/self")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(204);
 
         headers.setBasicAuth("thejus@gmail.com", "drowssap");
 
-        mockMvc.perform(get("/v1/user/self")
-                        .headers(headers))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.firstName").value("Wilson"))
-                .andExpect(jsonPath("$.lastName").value("Jacob"))
-        ;
+        given()
+                .headers(headers)
+                .contentType(ContentType.JSON)
+                .when()
+                .get("/self")
+                .then()
+                .log()
+                .all()
+                .assertThat()
+                .statusCode(200)
+                .body("firstName",equalTo("Wilson"))
+                .body("lastName",equalTo("Jacob"));
 
-        mockMvc.perform(delete("/v1/user/{username}", "thejus@gmail.com")
-        ).andExpect(status().isNoContent());
+
+        given()
+                .when()
+                .delete("/{username}","thejus@gmail.com")
+                .then()
+                .statusCode(204);
     }
 
     private String createJsonInsert(User user) throws JsonProcessingException {

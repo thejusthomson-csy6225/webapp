@@ -50,11 +50,11 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<Object> handleAllOtherExceptions() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .headers(headers)
-                .build();
-    }
+//    @ExceptionHandler(value = Exception.class)
+//    public ResponseEntity<Object> handleAllOtherExceptions() {
+//        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                .headers(headers)
+//                .build();
+//    }
 
 }
