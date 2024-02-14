@@ -4,7 +4,6 @@ import com.csye6225.model.User;
 import com.csye6225.model.UserResponseDTO;
 import com.csye6225.security.SecurityHandler;
 import com.csye6225.service.UserService;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
