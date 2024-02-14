@@ -67,11 +67,6 @@ public class UserService {
         userRepository.save(existingUser);
     }
 
-    public void deleteUser(String userName) {
-        User toDelete = userRepository.findByUsername(userName);
-        userRepository.delete(toDelete);
-    }
-
     public boolean isValidPostRequest(User user) {
         return null != user.getFirstName() && !user.getFirstName().isBlank()
                 && null != user.getLastName() && !user.getLastName().isBlank()

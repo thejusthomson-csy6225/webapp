@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
@@ -14,6 +17,7 @@ import org.springframework.http.HttpHeaders;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTest {
 
@@ -26,6 +30,7 @@ class UserControllerTest {
     }
 
     @Test
+    @Order(1)
     void insertUserDetails_Success() throws Exception {
 
         given()
@@ -56,35 +61,18 @@ class UserControllerTest {
                 .body("firstName",equalTo("Thejus"))
                 .body("lastName",equalTo("Thomson"));
 
-
-        given()
-                .when()
-                .delete("/{username}","thejus@gmail.com")
-                .then()
-                .statusCode(204);
     }
 
     @Test
+    @Order(2)
     void updateUserDetails_Success() throws Exception {
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("thejus@gmail.com", "password");
 
         given()
-                .contentType(ContentType.JSON)
-                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null)))
-                .when()
-                .post()
-                .then()
-                .log()
-                .all()
-                .assertThat()
-                .statusCode(201);
-
-
-        given()
                 .headers(headers)
                 .contentType(ContentType.JSON)
-                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap",null, null, null)))
+                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap", null, null, null)))
                 .log()
                 .all()
                 .when()
@@ -107,15 +95,8 @@ class UserControllerTest {
                 .all()
                 .assertThat()
                 .statusCode(200)
-                .body("firstName",equalTo("Wilson"))
-                .body("lastName",equalTo("Jacob"));
-
-
-        given()
-                .when()
-                .delete("/{username}","thejus@gmail.com")
-                .then()
-                .statusCode(204);
+                .body("firstName", equalTo("Wilson"))
+                .body("lastName", equalTo("Jacob"));
     }
 
     private String createJsonInsert(User user) throws JsonProcessingException {
