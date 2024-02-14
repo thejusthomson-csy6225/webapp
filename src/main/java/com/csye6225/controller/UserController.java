@@ -113,11 +113,4 @@ public class UserController {
                 .build();
     }
 
-    @DeleteMapping("/{username}")
-    public ResponseEntity<Object> deleteUserName(@PathVariable String username) {
-        userService.deleteUser(username);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
-    }
 }
