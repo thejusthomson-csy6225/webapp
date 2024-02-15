@@ -94,7 +94,7 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .headers(headers)
-                    .body(e.getCause());
+                    .body(e.getMessage());
         }
     }
 

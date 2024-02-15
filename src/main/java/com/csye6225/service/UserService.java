@@ -51,7 +51,7 @@ public class UserService {
 
     public void updateUserDetails(User updateUser) throws BadRequestException {
         if (isNotValidPutRequest(updateUser)) {
-            throw new BadRequestException("Body is blank");
+            throw new BadRequestException("Body is blank/ fields are empty");
         }
         User existingUser = userRepository.findByUsername(updateUser.getUsername());
         if(null != updateUser.getFirstName() && !updateUser.getFirstName().isBlank()) {
@@ -75,8 +75,11 @@ public class UserService {
     }
 
     public boolean isNotValidPutRequest(User user) {
-        return user.getFirstName() == null
+        if (user.getFirstName() == null
                 && user.getLastName() == null
-                && user.getPassword() == null;
+                && user.getPassword() == null) {
+            return true;
+        }
+        return ((null != user.getFirstName() && user.getFirstName().isBlank()) || (null != user.getLastName() && user.getLastName().isBlank()) || (null != user.getPassword() && user.getPassword().isBlank()));
     }
 }
