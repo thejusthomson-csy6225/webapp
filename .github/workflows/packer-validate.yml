@@ -17,8 +17,6 @@ jobs:
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         id: setup-packer
-        with:
-          version: "3.0.0"
 
       - name: Init Packer
         run: ${{ steps.setup-packer.outputs.packer_path }} init packer/custom-image.pkr.hcl
