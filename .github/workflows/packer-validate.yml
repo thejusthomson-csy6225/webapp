@@ -1,0 +1,27 @@
+name: Validating packer Packer
+
+on:
+    pull_request:
+        branches:
+            - 'main'
+
+
+jobs:
+  build:
+    name: Packer Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        id: setup-packer
+        with:
+          version: "3.0.0"
+
+      - name: Init Packer
+        run: ${{ steps.setup-packer.outputs.packer_path }} init packer/custom-image.pkr.hcl
+
+      - name: Validate Packer configuration
+        run: ${{ steps.setup-packer.outputs.packer_path }} validate packer/custom-image.pkr.hcl
