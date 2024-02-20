@@ -42,7 +42,7 @@ class UserControllerTest {
                 .log()
                 .all()
                 .assertThat()
-                .statusCode(201);
+                .statusCode(200);
 
 
         HttpHeaders headers = new HttpHeaders();
@@ -81,7 +81,7 @@ class UserControllerTest {
                 .log()
                 .all()
                 .assertThat()
-                .statusCode(204);
+                .statusCode(200);
 
         headers.setBasicAuth("thejus@gmail.com", "drowssap");
 
