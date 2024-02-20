@@ -1,13 +1,10 @@
 #!/usr/bin/bash
 
 #install unzip
-sudo dnf install unzip -y
+#sudo dnf install unzip -y
 
 #install wget
-sudo dnf install wget -y
-
-#install java 
-sudo dnf install java-17-openjdk-devel.x86_64 -y
+#sudo dnf install wget -y
 
 #install mySQL
 sudo dnf install mysql-server -y
@@ -15,11 +12,17 @@ sudo dnf install mysql-server -y
 #start service
 sudo systemctl start mysqld
 
-#install maven
-wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz -P /tmp
+#install java 
+sudo dnf install java-17-openjdk-devel.x86_64 -y
+
+#change password
+sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyCentosPass8#';"
 
 #install maven
-sudo tar xf /tmp/apache-maven-3.9.6-bin.tar.gz -C /opt
+#wget https://dlcdn.apache.org/maven/maven-3/3.9.6/binaries/apache-maven-3.9.6-bin.tar.gz -P /tmp
+
+#install maven
+#sudo tar xf /tmp/apache-maven-3.9.6-bin.tar.gz -C /opt
 
 # #export
 # #export JAVA_HOME=/usr/lib/jvm/java-openjdk
