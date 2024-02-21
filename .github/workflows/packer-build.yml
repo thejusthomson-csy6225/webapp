@@ -65,7 +65,7 @@ jobs:
         run: packer init packer/custom-image.pkr.hcl
 
       - name: Build image
-        run: packer build ./packer/custom-image.pkr.hcl
+        run: packer build ./packer .
         env: 
           name: Building custom image with Packer
           runs-on: ubuntu-latest
