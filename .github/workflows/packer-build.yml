@@ -28,14 +28,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
+
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-          
-      - name: Echo
-        run: echo "PKR_VAR_source_image_family is ${{vars.SOURCE_IMAGE_FAMILY}}"
 
       - name: Initialize MYSQL
         run: |
