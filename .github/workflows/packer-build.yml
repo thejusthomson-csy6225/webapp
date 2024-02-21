@@ -9,7 +9,6 @@ jobs:
   build:
     name: Testing and building jar
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
     env:
       MYSQL_DATABASE_URL: ${{secrets.MYSQL_DATABASE_URL}}
       MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
@@ -36,7 +35,6 @@ jobs:
     name: Building custom image with Packer
     runs-on: ubuntu-latest
     needs: build
-    if: github.event.pull_request.merged == true
     env:
       SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
       project_id: ${{ secrets.PROJECT_ID }}
