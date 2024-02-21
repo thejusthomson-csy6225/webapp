@@ -1,2 +1,2 @@
-variable "credentials_json" {}
-variable "service_account_email" {}
+service_account_email = ""
+credentials_json = ""
