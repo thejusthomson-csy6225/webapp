@@ -4,9 +4,12 @@ on:
   pull_request:
     branches:
       - 'main'
+    types:
+      - closed
 
 jobs:
-  build:
+  if_merged:
+    if: github.event.pull_request.merged == true
     name: Building Jar and Creating Custom Packer Image
     runs-on: ubuntu-latest
     env:
@@ -40,7 +43,7 @@ jobs:
           sudo /etc/init.d/mysql start
           mysql -h localhost -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;" -u$MYSQL_DATABASE_USERNAME -p$MYSQL_DATABASE_PASSWORD
       - name: Build with Maven
-        run: mvn -B package -DskipTests --file pom.xml
+        run: mvn -B package --file pom.xml
 
       - name: Setup env file
         run: |
