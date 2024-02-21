@@ -26,4 +26,4 @@ jobs:
         run: packer init packer/custom-image.pkr.hcl
 
       - name: Validate Packer configuration
-        run: packer validate -var-file=variables.pkr.hcl -var 'credentials_json=${service_account_json}' -var 'service_account_email=${service_account_email}' packer/.
+        run: packer validate -var "service_account_email=${service_account_email}" -var "credentials_json=${service_account_json}" packer/custom-image.pkr.hcl
