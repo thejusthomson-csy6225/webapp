@@ -3,7 +3,7 @@ variable "service_account_email" {
   description = "Service account email for authentication"
 }
 
-variable "service_account_json" {
+variable "credentials_json" {
   type        = string
   description = "Service account json for authentication"
 }
