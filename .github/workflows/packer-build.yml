@@ -38,9 +38,9 @@ jobs:
     needs: build
     if: github.event.pull_request.merged == true
     env:
-      service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+      SERVICE_ACCOUNT_JSON: ${{ secrets.SERVICE_ACCOUNT_JSON }}
       project_id: ${{ secrets.PROJECT_ID }}
-      service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+      SERVICE_ACCOUNT_EMAIL: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -50,4 +50,4 @@ jobs:
         id: setup-packer
 
       - name: Build image
-        run: ${{ steps.setup-packer.outputs.packer_path }} build packer/custom-image.pkr.hcl
+        run: packer build ./packer/custom-image.pkr.hcl
