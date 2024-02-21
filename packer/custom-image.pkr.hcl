@@ -15,10 +15,12 @@ source "googlecompute" "centos8" {
   image_name          = "centos8-java8-mysql-custom-image"
   # credentials_file      = "./target/csye-6225-dev-414805-613a7d5411b3.json"
   # service_account_email = "csye6225-packer-dev@csye-6225-dev-414805.iam.gserviceaccount.com"
-  credentials_json    = "${env.SERVICE_ACCOUNT_JSON}"
-  service_account_email = "${env.SERVICE_ACCOUNT_EMAIL}"
+  credentials_json    = "${var.credentials_json}"
+  service_account_email = "${var.service_account_email}"
 
 }
+
+variable_file = ".variables.json"
 
 build {
 
