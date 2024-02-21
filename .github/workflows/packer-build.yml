@@ -23,7 +23,7 @@ jobs:
       PKR_VAR_jar_source          : ${{vars.JAR_SOURCE}}
       PKR_VAR_jar_destination     : ${{vars.JAR_DESTINATION}}
       PKR_VAR_network : ${{vars.NETWORK}}
-      PKR_VAR_service_account_email : ${{vars.SERVICE_ACCOUNT_EMAIL}}
+      PKR_VAR_service_account_email : ${{secrets.GCP_SERVICE_ACCOUNT_EMAIL}}
 
     steps:
       - uses: actions/checkout@v4
