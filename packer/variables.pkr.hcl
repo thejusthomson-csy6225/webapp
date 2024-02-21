@@ -1,11 +1,2 @@
-variable "service_account_email" {
-  type        = string
-  description = "Service account email for authentication"
-  default     = ""
-}
-
-variable "credentials_json" {
-  type        = string
-  description = "Service account json for authentication"
-  default     = ""
-  }
+variable "credentials_json" {}
+variable "service_account_email" {}
