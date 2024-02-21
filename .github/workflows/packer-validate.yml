@@ -18,6 +18,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: 'Authenticate to Google Cloud'
+        id: 'auth'
+        uses: 'google-github-actions/auth@v1'
+        with:
+            workload_identity_provider: '${{ secrets.WIF_PROVIDER }}'
+            service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}'
+
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         id: setup-packer
@@ -26,4 +33,4 @@ jobs:
         run: packer init packer/custom-image.pkr.hcl
 
       - name: Validate Packer configuration
-        run: packer validate ./packer/custom-image.pkr.hcl
+        run: packer validate -syntax-only -evaluate-datasources ./packer/custom-image.pkr.hcl
