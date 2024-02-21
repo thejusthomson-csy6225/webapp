@@ -47,5 +47,8 @@ jobs:
         uses: hashicorp/setup-packer@main
         id: setup-packer
 
+      - name: Init Packer
+        run: packer init packer/custom-image.pkr.hcl
+
       - name: Build image
         run: packer build ./packer/custom-image.pkr.hcl
