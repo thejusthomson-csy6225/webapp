@@ -10,4 +10,4 @@ sudo systemctl start mysqld
 sudo dnf install java-17-openjdk-devel.x86_64 -y
 
 #change password
-sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'MyCentosPass8#';"
+sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY 'root';"

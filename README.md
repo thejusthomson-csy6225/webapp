@@ -1,4 +1,4 @@
-# Webapp Test
+# Webapp
 
 ## Health Check RESTful API
 
