@@ -10,10 +10,6 @@ jobs:
   build:
     name: Packer Validate
     runs-on: ubuntu-latest
-    env:
-        service_account_json: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-        project_id: ${{ secrets.PROJECT_ID }}
-        service_account_email: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
