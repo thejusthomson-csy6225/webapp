@@ -9,13 +9,13 @@ packer {
 }
 
 source "googlecompute" "centos8" {
-  project_id          = "csye-6225-dev-414805"
-  source_image_family = "centos-stream-8"
-  zone                = "us-east1-b"
-  ssh_username        = "packer"
-  image_name          = "centos8-java8-mysql-custom-image"
-  # credentials_file      = "./target/csye-6225-dev-414805-613a7d5411b3.json"
-  # service_account_email = "csye6225-packer-dev@csye-6225-dev-414805.iam.gserviceaccount.com"
+  project_id            = var.project_id
+  source_image_family   = var.source_image_family
+  zone                  = var.zone
+  ssh_username          = var.ssh_username
+  image_name            = var.image_name
+  network               = var.network
+  service_account_email = var.service_account_email
 
 }
 
@@ -24,19 +24,33 @@ build {
   sources = ["source.googlecompute.centos8"]
 
   provisioner "shell" {
-    script = "./packer/scripts/setup.sh"
+    script = "${var.scripts_path}setup.sh"
   }
 
   provisioner "shell" {
-    script = "./packer/scripts/create-user.sh"
+    script = "${var.scripts_path}create-user.sh"
   }
 
   provisioner "file" {
-    source      = "./target/webapp-0.0.1-SNAPSHOT.jar"
-    destination = "/tmp/webapp-0.0.1-SNAPSHOT.jar"
+    source      = "${var.jar_source}"
+    destination = "${var.jar_destination}"
   }
 
   provisioner "shell" {
-    script = "./packer/scripts/change-ownership.sh"
+    script = "${var.scripts_path}change-ownership.sh"
+  }
+
+  provisioner "file" {
+    source = "${var.scripts_path}webapp-launch.service"
+    destination = "/tmp/webapp-launch.service"
+  }
+
+  provisioner "shell" {
+    script = "${var.scripts_path}execute-sysd.sh"
+  }
+
+  provisioner "file" {
+    source = "../.env"
+    destination = "/tmp/.env"
   }
 }
