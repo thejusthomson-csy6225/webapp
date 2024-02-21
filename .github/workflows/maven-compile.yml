@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Compiling and testing Maven
+    name: Compiling Maven
     runs-on: ubuntu-latest
     
     steps:

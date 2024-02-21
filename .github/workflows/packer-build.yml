@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Testing and building jar
+    name: Building Jar and Creating Custom Packer Image
     runs-on: ubuntu-latest
     env:
       MYSQL_DATABASE_URL: ${{secrets.MYSQL_DATABASE_URL}}
