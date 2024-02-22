@@ -47,10 +47,10 @@ jobs:
 
       - name: Setup env file
         run: |
-          echo "MYSQL_DATABASE_URL=${{secrets.MYSQL_DATABASE_URL}}" >> .env
-          echo "MYSQL_DATABASE=${{secrets.MYSQL_DATABASE}}" > .env
-          echo "MYSQL_DATABASE_USERNAME=${{secrets.MYSQL_DATABASE_USERNAME}}" > .env
-          echo "MYSQL_DATABASE_PASSWORD=${{secrets.MYSQL_DATABASE_PASSWORD}}" > .env
+          echo "MYSQL_DATABASE_URL=${{secrets.MYSQL_DATABASE_URL}}" > .env
+          echo "MYSQL_DATABASE=${{secrets.MYSQL_DATABASE}}" >> .env
+          echo "MYSQL_DATABASE_USERNAME=${{secrets.MYSQL_DATABASE_USERNAME}}" >> .env
+          echo "MYSQL_DATABASE_PASSWORD=${{secrets.MYSQL_DATABASE_PASSWORD}}" >> .env
 
 
       - name: Google Cloud Platform Auth
