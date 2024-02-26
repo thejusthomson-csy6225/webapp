@@ -33,7 +33,7 @@ build {
 
   provisioner "file" {
     source      = "${var.jar_source}"
-    destination = "${var.jar_destination}
+    destination = "${var.jar_destination}"
   }
 
   provisioner "shell" {
