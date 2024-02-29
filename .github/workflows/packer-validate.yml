@@ -33,7 +33,7 @@ jobs:
         run: packer init packer/custom-image.pkr.hcl
 
       - name: Format Packer configuration
-        run: packer fmt -check ./packer/custom-image.pkr.hcl
+        run: packer fmt -check ./packer/.
 
       - name: Validate Packer configuration
-        run: packer validate ./packer/custom-image.pkr.hcl
+        run: packer validate ./packer/.
