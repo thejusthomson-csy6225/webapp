@@ -13,7 +13,6 @@ jobs:
     name: Building Jar and Creating Custom Packer Image
     runs-on: ubuntu-latest
     env:
-
       PKR_VAR_project_id: ${{vars.PROJECT_ID}}
       PKR_VAR_source_image_family: ${{vars.SOURCE_IMAGE_FAMILY}}
       PKR_VAR_zone                : ${{vars.ZONE}}
@@ -24,7 +23,6 @@ jobs:
       PKR_VAR_jar_destination     : ${{vars.JAR_DESTINATION}}
       PKR_VAR_network : ${{vars.NETWORK}}
       PKR_VAR_service_account_email : ${{secrets.GCP_SERVICE_ACCOUNT_EMAIL}}
-
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK 17
