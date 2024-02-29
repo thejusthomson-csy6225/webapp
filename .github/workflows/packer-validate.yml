@@ -36,4 +36,4 @@ jobs:
         run: packer fmt -check ./packer/custom-image.pkr.hcl
 
       - name: Validate Packer configuration
-        run: packer validate ./packer/. -syntax-only
+        run: packer validate -syntax-only ./packer/.
