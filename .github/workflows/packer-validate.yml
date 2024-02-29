@@ -10,6 +10,17 @@ jobs:
   build:
     name: Packer Validate
     runs-on: ubuntu-latest
+    env:
+      PKR_VAR_project_id: ${{vars.PROJECT_ID}}
+      PKR_VAR_source_image_family: ${{vars.SOURCE_IMAGE_FAMILY}}
+      PKR_VAR_zone: ${{vars.ZONE}}
+      PKR_VAR_ssh_username: ${{vars.SSH_USERNAME}}
+      PKR_VAR_image_name: ${{vars.IMAGE_NAME}}
+      PKR_VAR_scripts_path: ${{vars.SCRIPTS_PATH}}
+      PKR_VAR_jar_source: ${{vars.JAR_SOURCE}}
+      PKR_VAR_jar_destination: ${{vars.JAR_DESTINATION}}
+      PKR_VAR_network: ${{vars.NETWORK}}
+      PKR_VAR_service_account_email: ${{secrets.GCP_SERVICE_ACCOUNT_EMAIL}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -25,4 +36,4 @@ jobs:
         run: packer fmt -check ./packer/custom-image.pkr.hcl
 
       - name: Validate Packer configuration
-        run: packer validate ./packer/custom-image.pkr.hcl
+        run: packer validate ./packer/custom-image.pkr.hcl -var
