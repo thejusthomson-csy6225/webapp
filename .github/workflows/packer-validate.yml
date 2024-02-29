@@ -21,5 +21,8 @@ jobs:
       - name: Init Packer
         run: packer init packer/custom-image.pkr.hcl
 
+      - name: Format Packer configuration
+        run: packer fmt -check ./packer/custom-image.pkr.hcl
+
       - name: Validate Packer configuration
-        run: packer validate -syntax-only -evaluate-datasources ./packer/custom-image.pkr.hcl
+        run: packer validate ./packer/custom-image.pkr.hcl

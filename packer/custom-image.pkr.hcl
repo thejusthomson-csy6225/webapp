@@ -9,7 +9,7 @@ packer {
 }
 
 source "googlecompute" "centos8" {
-   project_id            = var.project_id
+  project_id            = var.project_id
   source_image_family   = var.source_image_family
   zone                  = var.zone
   ssh_username          = var.ssh_username
@@ -41,16 +41,11 @@ build {
   }
 
   provisioner "file" {
-    source = "${var.scripts_path}webapp-launch.service"
+    source      = "${var.scripts_path}webapp-launch.service"
     destination = "/tmp/webapp-launch.service"
   }
 
   provisioner "shell" {
     script = "${var.scripts_path}execute-sysd.sh"
-  }
-
-  provisioner "file" {
-    source = "./.env"
-    destination = "/tmp/.env"
   }
 }

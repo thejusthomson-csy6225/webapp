@@ -13,10 +13,7 @@ jobs:
     name: Building Jar and Creating Custom Packer Image
     runs-on: ubuntu-latest
     env:
-      MYSQL_DATABASE_URL: ${{secrets.MYSQL_DATABASE_URL}}
-      MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
-      MYSQL_DATABASE_USERNAME: ${{secrets.MYSQL_DATABASE_USERNAME}}
-      MYSQL_DATABASE_PASSWORD: ${{secrets.MYSQL_DATABASE_PASSWORD}}
+
       PKR_VAR_project_id: ${{vars.PROJECT_ID}}
       PKR_VAR_source_image_family: ${{vars.SOURCE_IMAGE_FAMILY}}
       PKR_VAR_zone                : ${{vars.ZONE}}
@@ -44,14 +41,6 @@ jobs:
           mysql -h localhost -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;" -u$MYSQL_DATABASE_USERNAME -p$MYSQL_DATABASE_PASSWORD
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-
-      - name: Setup env file
-        run: |
-          echo "MYSQL_DATABASE_URL=${{secrets.MYSQL_DATABASE_URL}}" > .env
-          echo "MYSQL_DATABASE=${{secrets.MYSQL_DATABASE}}" >> .env
-          echo "MYSQL_DATABASE_USERNAME=${{secrets.MYSQL_DATABASE_USERNAME}}" >> .env
-          echo "MYSQL_DATABASE_PASSWORD=${{secrets.MYSQL_DATABASE_PASSWORD}}" >> .env
-
 
       - name: Google Cloud Platform Auth
         uses: 'google-github-actions/auth@v2'
