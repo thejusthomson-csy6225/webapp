@@ -48,4 +48,8 @@ build {
   provisioner "shell" {
     script = "${var.scripts_path}execute-sysd.sh"
   }
+
+  provisioner "shell" {
+    script = "${var.scripts_path}ops-install.sh"
+  }
 }
