@@ -28,6 +28,6 @@ jobs:
       - name: Initialize MYSQL
         run: |
           sudo /etc/init.d/mysql start
-          mysql -h localhost -e "CREATE DATABASE IF NOT EXISTS MYSQL_DATABASE;" -u$MYSQL_DATABASE_USERNAME -p$MYSQL_DATABASE_PASSWORD
+          mysql -h localhost -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;" -u$MYSQL_DATABASE_USERNAME -p$MYSQL_DATABASE_PASSWORD
       - name: Build with Maven
         run: mvn test --file pom.xml
