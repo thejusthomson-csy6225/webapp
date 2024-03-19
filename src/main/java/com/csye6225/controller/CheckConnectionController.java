@@ -1,6 +1,9 @@
 package com.csye6225.controller;
 
 import com.csye6225.service.CheckConnectionService;
+import lombok.extern.java.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +42,8 @@ public class CheckConnectionController {
     @GetMapping
     public ResponseEntity<String> checkConnection(@RequestBody(required = false) String body, @RequestParam(required = false) Map<String,String> params, @RequestHeader(required = false,value = "Authorization")String auth) {
         HttpHeaders headers = new HttpHeaders();
+        final Logger logger = LoggerFactory.getLogger(CheckConnectionController.class);
+        logger.info("Logger is working");
         headers.set("Pragma", "no-cache");
         headers.set("X-Content-Type-Options", "nosniff");
         headers.setCacheControl(CacheControl.noCache().mustRevalidate());
@@ -60,6 +65,7 @@ public class CheckConnectionController {
                     .headers(headers)
                     .build();
         } catch (RuntimeException re) {
+            logger.error("An error has occured");
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
                     .headers(headers)
                     .build();
