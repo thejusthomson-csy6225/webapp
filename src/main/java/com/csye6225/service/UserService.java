@@ -7,6 +7,8 @@ import com.csye6225.security.SecurityHandler;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserService {
     private final UserRepository userRepository;
 
+    Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -22,11 +25,13 @@ public class UserService {
     public UserResponseDTO getUserDetailsAsDTO(String username) {
         User user = userRepository.findByUsername(username);
         ModelMapper mapper = new ModelMapper();
+        logger.debug("Data returned from DB: "+user);
         return mapper.map(user, UserResponseDTO.class);
     }
 
     public UserResponseDTO insertUserDetails(User user) throws BadRequestException {
         boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
+        logger.debug("User Exists? "+userExists);
         if(EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
             if(null != user.getPassword() && !user.getPassword().isBlank()) {
                 if(isValidPostRequest(user)) {
@@ -50,6 +55,7 @@ public class UserService {
     }
 
     public void updateUserDetails(User updateUser) throws BadRequestException {
+        logger.debug("Request to be updated: "+updateUser);
         if (isNotValidPutRequest(updateUser)) {
             throw new BadRequestException("Body is blank/ fields are empty");
         }
@@ -64,6 +70,7 @@ public class UserService {
             SecurityHandler securityHandler = new SecurityHandler(userRepository);
             existingUser.setPassword(securityHandler.passwordEncoder(updateUser.getPassword()));
         }
+        logger.debug("Data to be inserted: "+existingUser);
         userRepository.save(existingUser);
     }
 
