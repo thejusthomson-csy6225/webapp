@@ -1,5 +1,7 @@
 package com.csye6225.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,8 @@ public class CheckConnectionService {
 
     private final DataSource dataSource;
 
+    final Logger logger = LoggerFactory.getLogger(CheckConnectionService.class);
+
     @Autowired
     public CheckConnectionService(DataSource dataSource) {
         this.dataSource = dataSource;
@@ -19,8 +23,10 @@ public class CheckConnectionService {
     public void checkConnection(){
         try {
             dataSource.getConnection();
+            logger.info("Connection Successful!");
             System.out.println("Connection Successful!");
         } catch (SQLException se) {
+            logger.error("Connection failed..");
             System.out.println("Connection failed...");
             throw new RuntimeException(se);
         }

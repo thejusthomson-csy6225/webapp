@@ -4,7 +4,7 @@
     </appender>
 
     <appender name="jsonFileAppender" class="ch.qos.logback.core.FileAppender">
-        <file>testFile.log</file>
+        <file>/var/log/webapp.log</file>
         <append>true</append>
         <immediateFlush>true</immediateFlush>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
@@ -12,7 +12,9 @@
         </encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="org" level="INFO" />
+
+    <root level="DEBUG">
         <appender-ref ref="jsonConsoleAppender" />
         <appender-ref ref="jsonFileAppender" />
     </root>
