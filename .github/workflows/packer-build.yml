@@ -40,7 +40,7 @@ jobs:
 
       - name: Preparing log directory
         run: |
-          sudo chmod -R 766 /var/log
+          sudo chmod -R 733 /var/log
 
       - name: Initialize MYSQL
         run: |
