@@ -22,11 +22,16 @@ logging:
       type: parse_json
       time_key: time
       time_format: "%Y-%m-%dT%H:%M:%S.%L%Z"
+    move_severity:
+      type: modify_fields
+      fields:
+        severity:
+          move_from: jsonPayload.Level
   service:
     pipelines:
       default_pipeline:
         receivers: [my-app-receiver]
-        processors: [my-app-processor]
+        processors: [my-app-processor, move_severity]
 EOF
 )
 
@@ -36,3 +41,5 @@ config_file="/etc/google-cloud-ops-agent/config.yaml"
 # Append YAML content to the config file
 echo "$yaml_content" | sudo tee -a "$config_file" > /dev/null
 echo "YAML content appended to $config_file"
+
+sudo systemctl restart google-cloud-ops-agent
