@@ -29,6 +29,13 @@ jobs:
         uses: hashicorp/setup-packer@main
         id: setup-packer
 
+      - name: Preparing log directory
+        run: |
+          sudo chmod -R 766 /var/log  
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
+
       - name: Init Packer
         run: packer init packer/custom-image.pkr.hcl
 
@@ -36,4 +43,4 @@ jobs:
         run: packer fmt -check ./packer/custom-image.pkr.hcl
 
       - name: Validate Packer configuration
-        run: packer validate -syntax-only ./packer/.
+        run: packer validate ./packer/.

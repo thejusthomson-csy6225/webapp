@@ -38,6 +38,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Preparing log directory
+        run: |
+          sudo chmod -R 766 /var/log
+
       - name: Initialize MYSQL
         run: |
           sudo /etc/init.d/mysql start
