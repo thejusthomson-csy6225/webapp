@@ -46,13 +46,13 @@ jobs:
         run: |
           sudo /etc/init.d/mysql start
           mysql -h localhost -e "CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;" -u$MYSQL_DATABASE_USERNAME -p$MYSQL_DATABASE_PASSWORD
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
-
       - name: Google Cloud Platform Auth
         uses: 'google-github-actions/auth@v2'
         with:
-          credentials_json: '${{secrets.SERVICE_ACCOUNT_JSON}}' 
+          credentials_json: '${{secrets.SERVICE_ACCOUNT_JSON}}'
+
+      - name: Build with Maven
+        run: mvn -B package --file pom.xml
 
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
