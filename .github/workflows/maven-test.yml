@@ -35,5 +35,10 @@ jobs:
         run: |
           sudo chmod -R 733 /var/log
 
+      - name: Google Cloud Platform Auth
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{secrets.SERVICE_ACCOUNT_JSON}}'
+
       - name: Build with Maven
         run: mvn test --file pom.xml
