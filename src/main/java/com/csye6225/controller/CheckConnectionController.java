@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Map;
 
 @RestController
@@ -36,7 +37,7 @@ public class CheckConnectionController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .headers(headers)
-                    .body("Authorization is invalid");
+                    .body(Collections.singletonMap("status","Authorization is invalid"));
         }
         logger.error("Method not allowed!");
         return ResponseEntity
@@ -60,7 +61,7 @@ public class CheckConnectionController {
                         .body("Authorization is invalid");
             }
             if ((params != null && !params.isEmpty()) || (body != null && !body.isEmpty())) {
-                logger.warn("Param is empty/body is null");
+                logger.warn("Param is not empty/body is not null");
                 return ResponseEntity
                         .badRequest()
                         .headers(headers)
