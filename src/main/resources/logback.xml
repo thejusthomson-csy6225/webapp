@@ -1,6 +1,9 @@
 <configuration>
     <appender name="jsonConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+<!--        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />-->
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] [%-5level] [%logger{36}] - %msg%n</pattern>
+        </encoder>
     </appender>
 
     <appender name="jsonFileAppender" class="ch.qos.logback.core.FileAppender">
