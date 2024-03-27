@@ -151,9 +151,14 @@ public class UserController {
     }
 
     @GetMapping("/verify")
-    public ResponseEntity<Object> verifyUser(@RequestParam(required = false) Map<String,String> params) {
+    public ResponseEntity<Object> verifyUser(@RequestParam(required = false) Map<String,String> params, @RequestBody(required = false) String body, @RequestHeader(required = false, value = "isIntegrationTest") boolean isIntegrationTest ) {
+        if(null != body && !body.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .build();        }
         try {
-            String message = userService.verifyUser(params);
+            String message = userService.verifyUser(params, isIntegrationTest);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .headers(headers)

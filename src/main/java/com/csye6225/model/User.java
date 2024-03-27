@@ -49,7 +49,6 @@ public class User {
     @Column(name = "isVerified")
     private boolean isVerified;
 
-    @CreationTimestamp
     @Column(name = "verificationMailSentTime")
     private Date verificationMailSentTime;
 }
