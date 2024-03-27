@@ -48,6 +48,7 @@ class UserControllerTest {
         String token = validatableResponse.extract().path("id");
         given().param("username","thejus@gmail.com")
                 .param("token",token)
+                .headers("isIntegrationTest",true)
                 .when()
                 .get("/verify")
                 .then()

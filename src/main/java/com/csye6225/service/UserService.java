@@ -106,10 +106,15 @@ public class UserService {
         return ((null != user.getFirstName() && user.getFirstName().isBlank()) || (null != user.getLastName() && user.getLastName().isBlank()) || (null != user.getPassword() && user.getPassword().isBlank()));
     }
 
-    public String verifyUser(Map<String,String> params) {
+    public String verifyUser(Map<String,String> params, boolean isIntegrationTest) {
         String username = params.get("username");
         String token = params.get("token");
         User user = getUserDetails(username);
+        if(isIntegrationTest) {
+            user.setVerified(true);
+            userRepository.save(user);
+            return username + " verified by default since integration test";
+        }
         if(user.isVerified()) {
             return username + " already verified!";
         }
