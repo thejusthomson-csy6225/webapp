@@ -3,6 +3,7 @@ package com.csye6225.controller;
 import com.csye6225.model.User;
 import com.csye6225.model.UserResponseDTO;
 import com.csye6225.security.SecurityHandler;
+import com.csye6225.service.PublisherService;
 import com.csye6225.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,14 +16,15 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/v1/user")
 public class UserController {
-
     private final UserService userService;
+    private final PublisherService publisherService;
     private final SecurityHandler securityHandler;
     HttpHeaders headers = new HttpHeaders();
     final Logger logger = LoggerFactory.getLogger(CheckConnectionController.class);
 
-    public UserController(UserService userService, SecurityHandler securityHandler) {
+    public UserController(UserService userService, PublisherService publisherService, SecurityHandler securityHandler) {
         this.userService = userService;
+        this.publisherService = publisherService;
         this.securityHandler = securityHandler;
         headers.setPragma("no-cache");
         headers.set("X-Content-Type-Options","nosniff");
@@ -70,6 +72,8 @@ public class UserController {
             }
             UserResponseDTO savedUser = userService.insertUserDetails(user);
             logger.debug("Saved user is: "+savedUser);
+            logger.debug("Publishing verification link...");
+            publisherService.publishVerificationLink(savedUser.getUsername());
             return ResponseEntity
                         .status(HttpStatus.CREATED)
                         .headers(headers)
