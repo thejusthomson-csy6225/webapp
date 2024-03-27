@@ -13,6 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/v1/user")
 public class UserController {
@@ -42,19 +45,27 @@ public class UserController {
                     .headers(headers)
                     .build();
         }
-        if (securityHandler.isValidUser(auth)) {
-            UserResponseDTO user = userService.getUserDetailsAsDTO(securityHandler.returnUsername(auth));
-            logger.warn("Auth is invalid");
-            logger.error("Unauthorized!");
+        try {
+            if (securityHandler.isValidUser(auth)) {
+                UserResponseDTO user = userService.getUserDetailsAsDTO(securityHandler.returnUsername(auth));
+                logger.warn("Auth is invalid");
+                logger.error("Unauthorized!");
+                return ResponseEntity
+                        .ok()
+                        .headers(headers)
+                        .body(user);
+            } else {
+                logger.warn("Auth is invalid");
+                logger.error("Unauthorized!");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        } catch (Exception e) {
+            logger.warn("Exception occurred");
+            logger.error(e.getMessage());
             return ResponseEntity
-                    .ok()
+                    .status(HttpStatus.UNAUTHORIZED)
                     .headers(headers)
-                    .body(user);
-        }
-        else {
-            logger.warn("Auth is invalid");
-            logger.error("Unauthorized!");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                    .body(Collections.singletonMap("status",e.getMessage()));
         }
     }
 
@@ -68,12 +79,12 @@ public class UserController {
                 return ResponseEntity
                         .status(HttpStatus.BAD_REQUEST)
                         .headers(headers)
-                        .body("Authorization is invalid");
+                        .body(Collections.singletonMap("status","Authorization is invalid"));
             }
             UserResponseDTO savedUser = userService.insertUserDetails(user);
             logger.debug("Saved user is: "+savedUser);
             logger.debug("Publishing verification link...");
-            publisherService.publishVerificationLink(savedUser.getUsername());
+            publisherService.publishVerificationLink(savedUser.getUsername()+":"+savedUser.getId());
             return ResponseEntity
                         .status(HttpStatus.CREATED)
                         .headers(headers)
@@ -84,7 +95,7 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .headers(headers)
-                    .body(be.getMessage());
+                    .body(Collections.singletonMap("status",be.getMessage()));
         }
 
     }
@@ -93,7 +104,7 @@ public class UserController {
     public ResponseEntity<Object> updateUserDetails(@RequestHeader("Authorization") String auth,@RequestBody User updateUser) {
         try {
             if (securityHandler.isValidUser(auth)) {
-                if (updateUser != null && updateUser.getUsername() == null && updateUser.getAccountCreated() == null && updateUser.getAccountUpdated() == null) {
+                if (updateUser != null && updateUser.getUsername() == null && updateUser.getAccountCreated() == null && updateUser.getAccountUpdated() == null && updateUser.getVerificationMailSentTime() == null && !updateUser.isVerified()) {
                     updateUser.setUsername(securityHandler.returnUsername(auth));
                     userService.updateUserDetails(updateUser);
                     logger.info("Update success!");
@@ -107,7 +118,7 @@ public class UserController {
                     logger.debug("Bad request is: "+ updateUser);
                     return ResponseEntity
                             .status(HttpStatus.BAD_REQUEST)
-                            .body("Invalid request");
+                            .body(Collections.singletonMap("status","Invalid request"));
                 }
             } else
                 return ResponseEntity
@@ -120,7 +131,7 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .headers(headers)
-                    .body(e.getMessage());
+                    .body(Collections.singletonMap("status: ",e.getMessage()));
         }
     }
 
@@ -131,7 +142,7 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .headers(headers)
-                    .body("Authorization is invalid");
+                    .body(Collections.singletonMap("status","Authorization is invalid"));
         }
         return ResponseEntity
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
@@ -139,4 +150,22 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<Object> verifyUser(@RequestParam(required = false) Map<String,String> params) {
+        try {
+            String message = userService.verifyUser(params);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .headers(headers)
+                    .body(Collections.singletonMap("verificationStatus", message));
+        }
+        catch (Exception e) {
+            logger.warn("Verification failed!");
+            logger.error(e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .headers(headers)
+                    .body(Collections.singletonMap("status", e.getMessage()));
+        }
+    }
 }

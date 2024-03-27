@@ -45,6 +45,13 @@ public class User {
     @Column(name = "account_updated")
     @UpdateTimestamp
     private Date accountUpdated;
+
+    @Column(name = "isVerified")
+    private boolean isVerified;
+
+    @CreationTimestamp
+    @Column(name = "verificationMailSentTime")
+    private Date verificationMailSentTime;
 }
 
 

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.response.ValidatableResponse;
 import jakarta.annotation.PostConstruct;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -33,9 +34,9 @@ class UserControllerTest {
     @Order(1)
     void insertUserDetails_Success() throws Exception {
 
-        given()
+        ValidatableResponse validatableResponse = given()
                 .contentType(ContentType.JSON)
-                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null)))
+                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null,   false, null)))
                 .when()
                 .post()
                 .then()
@@ -44,6 +45,15 @@ class UserControllerTest {
                 .assertThat()
                 .statusCode(201);
 
+        String token = validatableResponse.extract().path("id");
+        given().param("username","thejus@gmail.com")
+                .param("token",token)
+                .when()
+                .get("/verify")
+                .then()
+                .log()
+                .all()
+                .statusCode(200);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBasicAuth("thejus@gmail.com", "password");
@@ -72,7 +82,7 @@ class UserControllerTest {
         given()
                 .headers(headers)
                 .contentType(ContentType.JSON)
-                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap", null, null, null)))
+                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap", null, null, null, false, null)))
                 .log()
                 .all()
                 .when()

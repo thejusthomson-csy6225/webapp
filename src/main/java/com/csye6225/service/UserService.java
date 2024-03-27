@@ -12,6 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Map;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -22,11 +26,18 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserResponseDTO getUserDetailsAsDTO(String username) {
+    public UserResponseDTO getUserDetailsAsDTO(String username) throws Exception{
         User user = userRepository.findByUsername(username);
+        if(!user.isVerified()) {
+            throw new Exception("User Not Verified, please verify");
+        }
         ModelMapper mapper = new ModelMapper();
         logger.debug("Data returned from DB: "+user);
         return mapper.map(user, UserResponseDTO.class);
+    }
+
+    public User getUserDetails(String username) {
+        return userRepository.findByUsername(username);
     }
 
     public UserResponseDTO insertUserDetails(User user) throws BadRequestException {
@@ -54,12 +65,15 @@ public class UserService {
         }
     }
 
-    public void updateUserDetails(User updateUser) throws BadRequestException {
+    public void updateUserDetails(User updateUser) throws Exception {
         logger.debug("Request to be updated: "+updateUser);
         if (isNotValidPutRequest(updateUser)) {
             throw new BadRequestException("Body is blank/ fields are empty");
         }
         User existingUser = userRepository.findByUsername(updateUser.getUsername());
+        if(!existingUser.isVerified()) {
+            throw new Exception("User Not Verified, please verify");
+        }
         if(null != updateUser.getFirstName() && !updateUser.getFirstName().isBlank()) {
             existingUser.setFirstName(updateUser.getFirstName());
         }
@@ -78,7 +92,9 @@ public class UserService {
         return null != user.getFirstName() && !user.getFirstName().isBlank()
                 && null != user.getLastName() && !user.getLastName().isBlank()
                 && user.getId() == null && user.getAccountCreated() == null
-                && user.getAccountUpdated() == null;
+                && user.getAccountUpdated() == null
+                && user.getVerificationMailSentTime() == null
+                && !user.isVerified();
     }
 
     public boolean isNotValidPutRequest(User user) {
@@ -88,5 +104,26 @@ public class UserService {
             return true;
         }
         return ((null != user.getFirstName() && user.getFirstName().isBlank()) || (null != user.getLastName() && user.getLastName().isBlank()) || (null != user.getPassword() && user.getPassword().isBlank()));
+    }
+
+    public String verifyUser(Map<String,String> params) {
+        String username = params.get("username");
+        String token = params.get("token");
+        User user = getUserDetails(username);
+        if(user.isVerified()) {
+            return username + " already verified!";
+        }
+        Instant instantVerificationTime = user.getVerificationMailSentTime().toInstant();
+        System.out.println("instant time: "+Instant.now());
+        System.out.println("db time: "+instantVerificationTime);
+        Duration duration = Duration.between(instantVerificationTime, Instant.now());
+        if(token.equals(user.getId()) && duration.toSeconds() < 60 ) {
+            user.setVerified(true);
+            userRepository.save(user);
+            return username + " verified successfully!";
+        }
+        user.setVerified(false);
+        userRepository.save(user);
+        return "Sorry, verification link is incorrect or Expired!";
     }
 }

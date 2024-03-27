@@ -13,7 +13,7 @@ source "googlecompute" "centos8" {
   source_image_family   = var.source_image_family
   zone                  = var.zone
   ssh_username          = var.ssh_username
-  image_name            = var.image_name
+  image_name            = "${var.image_name}-{{timestamp}}"
   network               = var.network
   service_account_email = var.service_account_email
 
