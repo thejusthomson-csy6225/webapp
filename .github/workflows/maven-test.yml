@@ -9,7 +9,6 @@ jobs:
   build:
     name: Testing Maven
     runs-on: ubuntu-latest
-
     env:
       MYSQL_DATABASE_URL: ${{secrets.MYSQL_DATABASE_URL}}
       MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
