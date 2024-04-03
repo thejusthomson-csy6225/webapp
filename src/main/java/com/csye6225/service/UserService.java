@@ -10,20 +10,29 @@ import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
+    private final PublisherService publisherService;
+
     Logger logger = LoggerFactory.getLogger(UserService.class);
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PublisherService publisherService) {
         this.userRepository = userRepository;
+        this.publisherService = publisherService;;
     }
 
     public UserResponseDTO getUserDetailsAsDTO(String username) throws Exception{
@@ -40,28 +49,35 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public UserResponseDTO insertUserDetails(User user) throws BadRequestException {
-        boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
-        logger.debug("User Exists? "+userExists);
-        if(EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
-            if(null != user.getPassword() && !user.getPassword().isBlank()) {
-                if(isValidPostRequest(user)) {
-                    SecurityHandler securityHandler = new SecurityHandler(userRepository);
-                    user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
-                    User savedUser = userRepository.save(user);
-                    ModelMapper mapper = new ModelMapper();
-                    return mapper.map(savedUser, UserResponseDTO.class);
+    public UserResponseDTO insertUserDetails(User user) throws IOException, ExecutionException, InterruptedException {
+        ModelMapper mapper = new ModelMapper();
+        User savedUser = new User();
+        try {
+            boolean userExists = userRepository.findByUsername(user.getUsername()) != null;
+            logger.debug("User Exists? " + userExists);
+            if (EmailValidator.getInstance().isValid(user.getUsername()) && !userExists) {
+                if (null != user.getPassword() && !user.getPassword().isBlank()) {
+                    if (isValidPostRequest(user)) {
+                        SecurityHandler securityHandler = new SecurityHandler(userRepository);
+                        user.setPassword(securityHandler.passwordEncoder(user.getPassword()));
+                        user.setToken(UUID.randomUUID().toString());
+                        savedUser = userRepository.save(user);
+                        logger.debug("Publishing verification link...");
+                        publisherService.publishVerificationLink(savedUser.getUsername() + ":" + savedUser.getToken());
+                        return mapper.map(savedUser, UserResponseDTO.class);
+                    } else {
+                        throw new BadRequestException("Invalid request");
+                    }
+                } else {
+                    throw new BadRequestException("Password cannot be null or blank");
                 }
-                else {
-                    throw new BadRequestException("Invalid request");
-                }
+            } else {
+                throw new BadRequestException("Username is not valid/User already exists. Has to be unique and a valid email id");
             }
-            else {
-                throw new BadRequestException("Password cannot be null or blank");
-            }
-        }
-        else {
-            throw new BadRequestException("Username is not valid/User already exists. Has to be unique and a valid email id");
+        } catch (ExecutionException ee) {
+            logger.debug("Publishing verification link failed!");
+            logger.warn("Resource not found!");
+            return mapper.map(savedUser, UserResponseDTO.class);
         }
     }
 
@@ -93,7 +109,7 @@ public class UserService {
                 && null != user.getLastName() && !user.getLastName().isBlank()
                 && user.getId() == null && user.getAccountCreated() == null
                 && user.getAccountUpdated() == null
-                && user.getVerificationMailSentTime() == null
+                && user.getVerificationLinkExpirationTime() == null
                 && !user.isVerified();
     }
 
@@ -118,11 +134,11 @@ public class UserService {
         if(user.isVerified()) {
             return username + " already verified!";
         }
-        Instant instantVerificationTime = user.getVerificationMailSentTime().toInstant();
+        Instant instantVerificationTime = user.getVerificationLinkExpirationTime().toInstant();
         System.out.println("instant time: "+Instant.now());
         System.out.println("db time: "+instantVerificationTime);
         Duration duration = Duration.between(instantVerificationTime, Instant.now());
-        if(token.equals(user.getId()) && duration.toSeconds() < 60 ) {
+        if(token.equals(user.getToken()) && duration.toSeconds() < 0 ) {
             user.setVerified(true);
             userRepository.save(user);
             return username + " verified successfully!";

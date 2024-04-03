@@ -36,7 +36,7 @@ class UserControllerTest {
 
         ValidatableResponse validatableResponse = given()
                 .contentType(ContentType.JSON)
-                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null,   false, null)))
+                .body(createJsonInsert(new User(null, "Thejus", "Thomson", "password","thejus@gmail.com", null, null,   false, null, null)))
                 .when()
                 .post()
                 .then()
@@ -45,7 +45,7 @@ class UserControllerTest {
                 .assertThat()
                 .statusCode(201);
 
-        String token = validatableResponse.extract().path("id");
+        String token = validatableResponse.extract().path("token");
         given().param("username","thejus@gmail.com")
                 .param("token",token)
                 .headers("isIntegrationTest",true)
@@ -83,7 +83,7 @@ class UserControllerTest {
         given()
                 .headers(headers)
                 .contentType(ContentType.JSON)
-                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap", null, null, null, false, null)))
+                .body(createJsonInsert(new User(null, "Wilson", "Jacob", "drowssap", null, null, null, false, null, null)))
                 .log()
                 .all()
                 .when()
