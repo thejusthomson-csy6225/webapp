@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @Service
@@ -21,8 +22,7 @@ public class CheckConnectionService {
     }
 
     public void checkConnection(){
-        try {
-            dataSource.getConnection();
+        try(Connection conn = dataSource.getConnection()) {
             logger.info("Connection Successful!");
             System.out.println("Connection Successful!");
         } catch (SQLException se) {

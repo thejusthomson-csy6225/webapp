@@ -5,6 +5,7 @@ import com.csye6225.model.UserResponseDTO;
 import com.csye6225.security.SecurityHandler;
 import com.csye6225.service.PublisherService;
 import com.csye6225.service.UserService;
+import com.google.api.gax.rpc.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
@@ -15,19 +16,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/v1/user")
 public class UserController {
     private final UserService userService;
-    private final PublisherService publisherService;
     private final SecurityHandler securityHandler;
     HttpHeaders headers = new HttpHeaders();
     final Logger logger = LoggerFactory.getLogger(CheckConnectionController.class);
 
-    public UserController(UserService userService, PublisherService publisherService, SecurityHandler securityHandler) {
+    public UserController(UserService userService, SecurityHandler securityHandler) {
         this.userService = userService;
-        this.publisherService = publisherService;
         this.securityHandler = securityHandler;
         headers.setPragma("no-cache");
         headers.set("X-Content-Type-Options","nosniff");
@@ -60,6 +60,14 @@ public class UserController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
         } catch (Exception e) {
+            if(e.getMessage().contains("Not Verified")) {
+                logger.warn("Not verified!");
+                logger.error(e.getMessage());
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .headers(headers)
+                        .body(Collections.singletonMap("status: ",e.getMessage()));
+            }
             logger.warn("Exception occurred");
             logger.error(e.getMessage());
             return ResponseEntity
@@ -83,13 +91,12 @@ public class UserController {
             }
             UserResponseDTO savedUser = userService.insertUserDetails(user);
             logger.debug("Saved user is: "+savedUser);
-            logger.debug("Publishing verification link...");
-            publisherService.publishVerificationLink(savedUser.getUsername()+":"+savedUser.getId());
             return ResponseEntity
                         .status(HttpStatus.CREATED)
                         .headers(headers)
                         .body(savedUser);
-        } catch (Exception be) {
+        }
+        catch (Exception be) {
             logger.warn("Exception occurred");
             logger.error(be.getMessage());
             return ResponseEntity
@@ -104,7 +111,7 @@ public class UserController {
     public ResponseEntity<Object> updateUserDetails(@RequestHeader("Authorization") String auth,@RequestBody User updateUser) {
         try {
             if (securityHandler.isValidUser(auth)) {
-                if (updateUser != null && updateUser.getUsername() == null && updateUser.getAccountCreated() == null && updateUser.getAccountUpdated() == null && updateUser.getVerificationMailSentTime() == null && !updateUser.isVerified()) {
+                if (updateUser != null && updateUser.getUsername() == null && updateUser.getAccountCreated() == null && updateUser.getAccountUpdated() == null && updateUser.getVerificationLinkExpirationTime() == null && !updateUser.isVerified()) {
                     updateUser.setUsername(securityHandler.returnUsername(auth));
                     userService.updateUserDetails(updateUser);
                     logger.info("Update success!");
@@ -126,6 +133,14 @@ public class UserController {
                         .build();
         }
         catch (Exception e) {
+            if(e.getMessage().contains("Not Verified")) {
+                logger.warn("Not verified!");
+                logger.error(e.getMessage());
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .headers(headers)
+                        .body(Collections.singletonMap("status: ",e.getMessage()));
+            }
             logger.warn("Exception occurred!");
             logger.error(e.getMessage());
             return ResponseEntity
