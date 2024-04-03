@@ -53,7 +53,7 @@ public class User {
     @Column(name = "verificationLinkExpirationTime")
     private Date verificationLinkExpirationTime;
 
-    @Column(name = "token", nullable = false)
+    @Column(name = "token")
     @GeneratedValue(strategy = GenerationType.UUID)
     private String token;
 }
