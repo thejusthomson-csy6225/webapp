@@ -62,14 +62,11 @@ jobs:
         id: setup-packer
 
       - name: Init Packer
-        run: packer init packer/custom-image.pkr.hcl
+        run: packer init ./packer/.
 
       - name: Build image
         run: |
           packer build ./packer/.
-        env: 
-          name: Building custom image with Packer
-          runs-on: ubuntu-latest
 
       - name: Storing Image Name
         run: |
@@ -83,6 +80,7 @@ jobs:
             DB_NAME:projects/1021504010524/secrets/DB_NAME
             DB_PASSWORD:projects/1021504010524/secrets/DB_PASSWORD
             KMS_KEY:projects/1021504010524/secrets/KMS_KEY
+
       - name: Generate random string
         id: random-string
         run: echo "RANDOM_STRING=$(uuidgen | tr -d '-')" >> $GITHUB_ENV
@@ -91,7 +89,7 @@ jobs:
         run: |
             gcloud compute instance-templates create vm-instance-template-${{env.RANDOM_STRING}} \
             --machine-type ${{vars.MACHINE_TYPE}} \
-            --instance-template-region=${{vars.INSTANCE_TEMPLATE_REGION}}\
+            --instance-template-region=${{vars.INSTANCE_TEMPLATE_REGION}} \
             --create-disk=image=${{vars.IMAGE_BASE_PATH}}/${{env.SOURCE_IMAGE}},size=${{vars.DISK_SIZE}},boot=true,type=${{vars.DISK_TYPE}},auto-delete=yes,kms-key=${{steps.secrets.outputs.KMS_KEY}}  \
             --network=${{vars.VPC_NETWORK}} \
             --subnet=${{vars.VPC_SUBNETWORK}} \
