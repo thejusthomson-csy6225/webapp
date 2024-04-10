@@ -18,6 +18,7 @@ jobs:
       MYSQL_DATABASE_USERNAME: ${{secrets.MYSQL_DATABASE_USERNAME}}
       MYSQL_DATABASE_PASSWORD: ${{secrets.MYSQL_DATABASE_PASSWORD}}
       PROJECT_ID: ${{vars.PROJECT_ID}}
+      SOURCE_IMAGE: ${{vars.SOURCE_IMAGE}}
       TOPIC_ID: ${{vars.TOPIC_ID}}
       PKR_VAR_project_id: ${{vars.PROJECT_ID}}
       PKR_VAR_source_image_family: ${{vars.SOURCE_IMAGE_FAMILY}}
@@ -71,8 +72,12 @@ jobs:
       - name: Storing Image Name
         working-directory: ./packer
         run: |
-          output=$(packer build .)
-          SOURCE_IMAGE=$(echo $output | grep -Eo 'A disk image was created in the .+ project: .+' | sed -E 's/A disk image was created in the .+ project: (.+)/\1/') && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> $GITHUB_ENV
+          SOURCE_IMAGE=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2) && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> "$GITHUB_ENV"
+          
+      - name: List Files in Directory
+        working-directory: ./packer
+        run: |
+          ls -l
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
@@ -108,7 +113,6 @@ jobs:
       - name: 'Initiate the Rolling Update to apply the new instance template to the managed instance group'
         run: |
             gcloud compute instance-groups managed rolling-action start-update ${{vars.IGM_BASE_PATH}} --type=${{vars.UPDATE_TYPE}}\
-            --max-unavailable=${{vars.MAX_UNAVAILABLE}} \
             --version=template=${{vars.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
