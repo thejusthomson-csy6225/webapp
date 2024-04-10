@@ -3,9 +3,7 @@ package com.csye6225.controller;
 import com.csye6225.model.User;
 import com.csye6225.model.UserResponseDTO;
 import com.csye6225.security.SecurityHandler;
-import com.csye6225.service.PublisherService;
 import com.csye6225.service.UserService;
-import com.google.api.gax.rpc.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.CacheControl;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/v1/user")
