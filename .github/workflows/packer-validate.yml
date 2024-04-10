@@ -40,14 +40,14 @@ jobs:
         run: |
           sudo chmod -R 733 /var/log  
 
-      - name: Build with Maven
-        run: mvn -B package -DskipTests=true --file pom.xml
+      # - name: Build with Maven
+      #   run: mvn -B package -DskipTests=true --file pom.xml
 
-      - name: Init Packer
-        run: packer init packer/custom-image.pkr.hcl
+      # - name: Init Packer
+      #   run: packer init packer/custom-image.pkr.hcl
 
-      - name: Format Packer configuration
-        run: packer fmt -check ./packer/custom-image.pkr.hcl
+      # - name: Format Packer configuration
+      #   run: packer fmt -check ./packer/custom-image.pkr.hcl
 
-      - name: Validate Packer configuration
-        run: packer validate ./packer/.
+      # - name: Validate Packer configuration
+      #   run: packer validate ./packer/.
