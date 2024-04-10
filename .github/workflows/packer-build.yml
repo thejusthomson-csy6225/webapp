@@ -67,7 +67,6 @@ jobs:
       - name: Build image
         run: |
           packer build ./packer/.
-          SOURCE_IMAGE=$(echo $output | grep -Eo 'A disk image was created in the .+ project: .+' | sed -E 's/A disk image was created in the .+ project: (.+)/\1/') && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> "$GITHUB_ENV"
         env: 
           name: Building custom image with Packer
           runs-on: ubuntu-latest
@@ -93,7 +92,7 @@ jobs:
             gcloud compute instance-templates create vm-instance-template-${{env.RANDOM_STRING}} \
             --machine-type ${{vars.MACHINE_TYPE}} \
             --instance-template-region=${{vars.INSTANCE_TEMPLATE_REGION}}\
-            --create-disk=image=${{vars.IMAGE_BASE_PATH}}/${{env.SOURCE_IMAGE}},size=${{vars.DISK_SIZE}},boot=true,type=${{vars.DISK_TYPE}},auto-delete=yes,kms-key=${{steps.secrets.outputs.KMS_KEY}} \
+            --create-disk=image=${{vars.IMAGE_BASE_PATH}}/${{env.SOURCE_IMAGE}},size=${{vars.DISK_SIZE}},boot=true,type=${{vars.DISK_TYPE}},auto-delete=yes,kms-key=${{steps.secrets.outputs.KMS_KEY}}  \
             --network=${{vars.VPC_NETWORK}} \
             --subnet=${{vars.VPC_SUBNETWORK}} \
             --metadata startup-script="echo 'MYSQL_DATABASE_URL=${{steps.secrets.outputs.DB_URL}}' > .env && echo 'MYSQL_DATABASE_USERNAME=${{steps.secrets.outputs.DB_NAME}}' >> .env && echo 'MYSQL_DATABASE_PASSWORD=${{steps.secrets.outputs.DB_PASSWORD}}' >> .env && sudo mv .env /opt/ && sudo chown csye6225:csye6225 /opt/.env && sudo setenforce 0 && sudo systemctl daemon-reload && sudo systemctl restart webapp-launch.service" \
@@ -109,6 +108,7 @@ jobs:
       - name: 'Initiate the Rolling Update to apply the new instance template to the managed instance group'
         run: |
             gcloud compute instance-groups managed rolling-action start-update ${{vars.IGM_BASE_PATH}} --type=${{vars.UPDATE_TYPE}}\
+            --max-unavailable=${{vars.MAX_UNAVAILABLE}} \
             --version=template=${{vars.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
