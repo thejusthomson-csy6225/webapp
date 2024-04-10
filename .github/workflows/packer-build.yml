@@ -81,7 +81,7 @@ jobs:
             --machine-type n2-standard-2 \
             --instance-template-region=us-east1 \
             --create-disk=image=projects/test-cloud-csye6225/global/images/centos8-java8-custom-image-1712136717,size=100,boot=true,type=pd-balanced,auto-delete=yes \
-            --network=projects/test-cloud-csye6225/global/networks/vpc-network  
+            --network=projects/test-cloud-csye6225/global/networks/vpc-network \
             --subnet=projects/test-cloud-csye6225/regions/us-east1/subnetworks/webapp \
             --metadata startup-script="echo 'MYSQL_DATABASE_URL=${{steps.secrets.outputs.DB_URL}}' > .env && echo 'MYSQL_DATABASE_USERNAME=${{steps.secrets.outputs.DB_NAME}}' >> .env && echo 'MYSQL_DATABASE_PASSWORD=${{steps.secrets.outputs.DB_PASSWORD}}' >> .env && sudo mv .env /opt/ && sudo chown csye6225:csye6225 /opt/.env && sudo setenforce 0 && sudo systemctl daemon-reload && sudo systemctl restart webapp-launch.service" \
             --service-account test-cloud@test-cloud-csye6225.iam.gserviceaccount.com \
