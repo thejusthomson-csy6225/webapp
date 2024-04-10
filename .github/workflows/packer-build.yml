@@ -87,11 +87,11 @@ jobs:
       - name: Create new Instance Template version
         run: |
             gcloud compute instance-templates create vm-instance-template-${{env.RANDOM_STRING}} \
-            --machine-type ${{env.MACHINE_TYPE}} \
-            --instance-template-region=${{env.INSTANCE_TEMPLATE_REGION}}\
-            --create-disk=image=${{env.IMAGE_BASE_PATH}}/${{env.SOURCE_IMAGE}},size=${{env.DISK_SIZE}},boot=true,type=${{env.DISK_TYPE}},auto-delete=yes,kms-key=${{steps.secrets.outputs.KMS_KEY}} \
-            --network=${{env.VPC_NETWORK}} \
-            --subnet=${{env.VPC_SUBNETWORK}} \
+            --machine-type ${{vars.MACHINE_TYPE}} \
+            --instance-template-region=${{vars.INSTANCE_TEMPLATE_REGION}}\
+            --create-disk=image=${{vars.IMAGE_BASE_PATH}}/${{env.SOURCE_IMAGE}},size=${{vars.DISK_SIZE}},boot=true,type=${{vars.DISK_TYPE}},auto-delete=yes,kms-key=${{steps.secrets.outputs.KMS_KEY}} \
+            --network=${{vars.VPC_NETWORK}} \
+            --subnet=${{vars.VPC_SUBNETWORK}} \
             --metadata startup-script="echo 'MYSQL_DATABASE_URL=${{steps.secrets.outputs.DB_URL}}' > .env && echo 'MYSQL_DATABASE_USERNAME=${{steps.secrets.outputs.DB_NAME}}' >> .env && echo 'MYSQL_DATABASE_PASSWORD=${{steps.secrets.outputs.DB_PASSWORD}}' >> .env && sudo mv .env /opt/ && sudo chown csye6225:csye6225 /opt/.env && sudo setenforce 0 && sudo systemctl daemon-reload && sudo systemctl restart webapp-launch.service" \
             --service-account ${{secrets.SERVICE_ACCOUNT_EMAIL}} \
             --tags=vm-instance
@@ -99,18 +99,18 @@ jobs:
       - name: 'Linking New Instance Template to Managed Instance group'
         run: | 
             gcloud compute instance-groups managed set-instance-template \
-            ${{env.IGM_BASE_PATH}} \
-            --template=${{env.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
+            ${{vars.IGM_BASE_PATH}} \
+            --template=${{vars.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
   
       - name: 'Initiate the Rolling Update to apply the new instance template to the managed instance group'
         run: |
-            gcloud compute instance-groups managed rolling-action start-update ${{env.IGM_BASE_PATH}} --type=${{env.UPDATE_TYPE}}\
-            --version=template=${{env.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
+            gcloud compute instance-groups managed rolling-action start-update ${{vars.IGM_BASE_PATH}} --type=${{vars.UPDATE_TYPE}}\
+            --version=template=${{vars.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
         run: |
-            gcloud compute instance-groups managed wait-until ${{env.IGM_BASE_PATH}} --version-target-reached
+            gcloud compute instance-groups managed wait-until ${{vars.IGM_BASE_PATH}} --version-target-reached
 
       - name: Describe managed instance group
         run: |
-            gcloud compute instance-groups managed describe ${{env.IGM_BASE_PATH}}
+            gcloud compute instance-groups managed describe ${{vars.IGM_BASE_PATH}}
