@@ -61,11 +61,11 @@ jobs:
       # - name: Init Packer
       #   run: packer init packer/custom-image.pkr.hcl
 
-      # - name: Build image
-      #   run: packer build ./packer/.
-      #   env: 
-      #     name: Building custom image with Packer
-      #     runs-on: ubuntu-latest
+      - name: Build image
+        run: packer build ./packer/.
+        env: 
+          name: Building custom image with Packer
+          runs-on: ubuntu-latest
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
@@ -75,28 +75,32 @@ jobs:
             DB_NAME:projects/1021504010524/secrets/DB_NAME/versions/1
              DB_PASSWORD:projects/1021504010524/secrets/DB_PASSWORD/versions/1
 
+      - name: Generate random string
+        id: random-string
+        run: echo "::set-env name=RANDOM_STRING::$(uuidgen | tr -d '-')"
+
       - name: Create new Instance Template version
         run: |
-            gcloud compute instance-templates create vm-instance-template \
+            gcloud compute instance-templates create vm-instance-template-${RANDOM_STRING} \
             --machine-type n2-standard-2 \
             --instance-template-region=us-east1 \
             --create-disk=image=projects/test-cloud-csye6225/global/images/centos8-java8-custom-image-1712136717,size=100,boot=true,type=pd-balanced,auto-delete=yes \
             --network=projects/test-cloud-csye6225/global/networks/vpc-network \
             --subnet=projects/test-cloud-csye6225/regions/us-east1/subnetworks/webapp \
             --metadata startup-script="echo 'MYSQL_DATABASE_URL=${{steps.secrets.outputs.DB_URL}}' > .env && echo 'MYSQL_DATABASE_USERNAME=${{steps.secrets.outputs.DB_NAME}}' >> .env && echo 'MYSQL_DATABASE_PASSWORD=${{steps.secrets.outputs.DB_PASSWORD}}' >> .env && sudo mv .env /opt/ && sudo chown csye6225:csye6225 /opt/.env && sudo setenforce 0 && sudo systemctl daemon-reload && sudo systemctl restart webapp-launch.service" \
-            --service-account test-cloud@test-cloud-csye6225.iam.gserviceaccount.com \
+            --service-account ${{secrets.SERVICE_ACCOUNT_EMAIL}} \
             --tags=vm-instance
 
       - name: 'Linking New Instance Template to Managed Instance group'
         run: | 
             gcloud compute instance-groups managed set-instance-template \
             projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager \
-            --template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template
+            --template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template-${RANDOM_STRING}
   
       - name: 'Initiate the Rolling Update to apply the new instance template to the managed instance group'
         run: |
             gcloud compute instance-groups managed rolling-action start-update projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager \
-            --version=template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template
+            --version=template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template-${RANDOM_STRING}
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
         run: |
