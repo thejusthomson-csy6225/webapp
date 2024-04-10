@@ -79,7 +79,7 @@ jobs:
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
-          secrets: |-
+          secrets: |- 
             DB_URL:projects/1021504010524/secrets/DB_URL
             DB_NAME:projects/1021504010524/secrets/DB_NAME
             DB_PASSWORD:projects/1021504010524/secrets/DB_PASSWORD
