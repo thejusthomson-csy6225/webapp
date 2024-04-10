@@ -7,6 +7,7 @@ import com.google.pubsub.v1.PubsubMessage;
 import com.google.pubsub.v1.TopicName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,12 +15,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 @Service
 public class PublisherService {
-    public PublisherService() {
+    public PublisherService(Environment environment) {
+        this.environment = environment;
     }
+    private final Environment environment;
     final Logger logger = LoggerFactory.getLogger(PublisherService.class);
-    String projectId = "test-cloud-csye6225";
-    String topicId = "verify-email";
+
     public void publishVerificationLink(String username) throws IOException, ExecutionException, InterruptedException{
+
+        String projectId = environment.getProperty("PROJECT_ID");
+        String topicId = environment.getProperty("TOPIC_ID");
 
         logger.debug("Inside publishVerificationLink, username is: "+username);
         TopicName topicName = TopicName.of(projectId, topicId);
