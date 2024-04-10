@@ -69,8 +69,9 @@ jobs:
           packer build ./packer/.
 
       - name: Storing Image Name
+        working-directory: ./packer
         run: |
-          SOURCE_IMAGE=$(jq -r '.builds[-1].artifact_id' ./packer/manifest.json | cut -d ":" -f2) && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> "$GITHUB_ENV"
+          SOURCE_IMAGE=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2) && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> "$GITHUB_ENV"
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
