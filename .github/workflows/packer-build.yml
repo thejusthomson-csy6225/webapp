@@ -18,7 +18,7 @@ jobs:
       MYSQL_DATABASE_USERNAME: ${{secrets.MYSQL_DATABASE_USERNAME}}
       MYSQL_DATABASE_PASSWORD: ${{secrets.MYSQL_DATABASE_PASSWORD}}
       PROJECT_ID: ${{vars.PROJECT_ID}}
-      TOPIC_ID: ${{secrets.TOPIC_ID}}
+      TOPIC_ID: ${{vars.TOPIC_ID}}
       PKR_VAR_project_id: ${{vars.PROJECT_ID}}
       PKR_VAR_source_image_family: ${{vars.SOURCE_IMAGE_FAMILY}}
       PKR_VAR_zone                : ${{vars.ZONE}}
