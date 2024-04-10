@@ -51,4 +51,8 @@ build {
   provisioner "shell" {
     script = "${var.scripts_path}ops-install.sh"
   }
+  post-processor "manifest" {
+    output     = "manifest.json"
+    strip_path = true
+  }
 }
