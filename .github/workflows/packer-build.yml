@@ -71,7 +71,8 @@ jobs:
       - name: Storing Image Name
         working-directory: ./packer
         run: |
-          SOURCE_IMAGE=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2) && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> "$GITHUB_ENV"
+          output=$(packer build .)
+          SOURCE_IMAGE=$(echo $output | grep -Eo 'A disk image was created in the .+ project: .+' | sed -E 's/A disk image was created in the .+ project: (.+)/\1/') && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> $GITHUB_ENV
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
