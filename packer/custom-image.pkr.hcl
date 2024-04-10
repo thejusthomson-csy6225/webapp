@@ -16,7 +16,6 @@ source "googlecompute" "centos8" {
   image_name            = "${var.image_name}-{{timestamp}}"
   network               = var.network
   service_account_email = var.service_account_email
-
 }
 
 build {
