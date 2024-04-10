@@ -80,10 +80,10 @@ jobs:
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
         with:
           secrets: |-
-            DB_URL:projects/1021504010524/secrets/DB_URL/versions/1
-            DB_NAME:projects/1021504010524/secrets/DB_NAME/versions/1
-            DB_PASSWORD:projects/1021504010524/secrets/DB_PASSWORD/versions/1
-            KMS_KEY:projects/1021504010524/secrets/KMS_KEY/versions/1
+            DB_URL:projects/1021504010524/secrets/DB_URL
+            DB_NAME:projects/1021504010524/secrets/DB_NAME
+            DB_PASSWORD:projects/1021504010524/secrets/DB_PASSWORD
+            KMS_KEY:projects/1021504010524/secrets/KMS_KEY
       - name: Generate random string
         id: random-string
         run: echo "RANDOM_STRING=$(uuidgen | tr -d '-')" >> $GITHUB_ENV
