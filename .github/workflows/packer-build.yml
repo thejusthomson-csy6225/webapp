@@ -4,12 +4,12 @@ on:
   pull_request:
     branches:
       - 'main'
-    # types:
-    #   - closed
+    types:
+      - closed
 
 jobs:
   packer:
-    # if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true
     name: Building Jar and Creating Custom Packer Image
     runs-on: ubuntu-latest
     env:
@@ -70,12 +70,10 @@ jobs:
           packer build ./packer/.
 
       - name: Storing Image Name
-        working-directory: ./packer
         run: |
           SOURCE_IMAGE=$(jq -r '.builds[-1].artifact_id' manifest.json | cut -d ":" -f2) && echo "SOURCE_IMAGE=$SOURCE_IMAGE" >> "$GITHUB_ENV"
           
       - name: List Files in Directory
-        working-directory: ./packer
         run: |
           ls -l
 
