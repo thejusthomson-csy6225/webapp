@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - 'main'
+    # types:
+    #   - closed 
 
 jobs:
   packer:
@@ -49,21 +51,21 @@ jobs:
         with:
           credentials_json: '${{secrets.SERVICE_ACCOUNT_JSON}}'
 
-      - name: Build with Maven
-        run: mvn -B package --file pom.xml
+      # - name: Build with Maven
+      #   run: mvn -B package --file pom.xml
 
-      - name: Setup Packer
-        uses: hashicorp/setup-packer@main
-        id: setup-packer
+      # - name: Setup Packer
+      #   uses: hashicorp/setup-packer@main
+      #   id: setup-packer
 
-      - name: Init Packer
-        run: packer init packer/custom-image.pkr.hcl
+      # - name: Init Packer
+      #   run: packer init packer/custom-image.pkr.hcl
 
-      - name: Build image
-        run: packer build ./packer/.
-        env: 
-          name: Building custom image with Packer
-          runs-on: ubuntu-latest
+      # - name: Build image
+      #   run: packer build ./packer/.
+      #   env: 
+      #     name: Building custom image with Packer
+      #     runs-on: ubuntu-latest
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
