@@ -77,11 +77,11 @@ jobs:
 
       - name: Generate random string
         id: random-string
-        run: echo "::set-env name=RANDOM_STRING::$(uuidgen | tr -d '-')"
+        run: echo "RANDOM_STRING=$(uuidgen | tr -d '-')" >> $GITHUB_ENV
 
       - name: Create new Instance Template version
         run: |
-            gcloud compute instance-templates create vm-instance-template-${RANDOM_STRING} \
+            gcloud compute instance-templates create vm-instance-template-${{env.RANDOM_STRING}} \
             --machine-type n2-standard-2 \
             --instance-template-region=us-east1 \
             --create-disk=image=projects/test-cloud-csye6225/global/images/centos8-java8-custom-image-1712136717,size=100,boot=true,type=pd-balanced,auto-delete=yes \
@@ -95,12 +95,12 @@ jobs:
         run: | 
             gcloud compute instance-groups managed set-instance-template \
             projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager \
-            --template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template-${RANDOM_STRING}
+            --template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template-${{env.RANDOM_STRING}}
   
       - name: 'Initiate the Rolling Update to apply the new instance template to the managed instance group'
         run: |
             gcloud compute instance-groups managed rolling-action start-update projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager \
-            --version=template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template-${RANDOM_STRING}
+            --version=template=projects/test-cloud-csye6225/regions/us-east1/instanceTemplates/vm-instance-template-${{env.RANDOM_STRING}}
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
         run: |
