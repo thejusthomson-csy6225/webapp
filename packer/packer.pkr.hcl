@@ -47,3 +47,7 @@ variable "service_account_email" {
   type        = string
   description = "Service account mail"
 }
+post-processor "manifest" {
+    output     = "manifest.json"
+    strip_path = true
+  }
