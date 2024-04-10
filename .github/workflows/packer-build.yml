@@ -104,7 +104,7 @@ jobs:
   
       - name: 'Initiate the Rolling Update to apply the new instance template to the managed instance group'
         run: |
-            gcloud compute instance-groups managed rolling-action start-update ${{vars.IGM_BASE_PATH}} --type=${{vars.UPDATE_TYPE}}\
+            gcloud compute instance-groups managed rolling-action start-update ${{vars.IGM_BASE_PATH}} --type=${{vars.UPDATE_TYPE}} \
             --version=template=${{vars.IT_BASE_PATH}}-${{env.RANDOM_STRING}}
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
