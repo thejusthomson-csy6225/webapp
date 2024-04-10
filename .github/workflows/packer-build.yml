@@ -100,7 +100,6 @@ jobs:
 
       - name: 'Verify the completion of rolling updates by checking the "version target reached" flag.'
         run: |
-              gcloud compute instance-groups managed wait-until projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager 
-              --version-target-reached \
+              gcloud compute instance-groups managed wait-until projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager --version-target-reached \
               gcloud compute instance-groups managed describe projects/test-cloud-csye6225/regions/us-east1/instanceGroupManagers/webapp-instance-group-manager \
               --format=json | jq '.versionTargetReached'
