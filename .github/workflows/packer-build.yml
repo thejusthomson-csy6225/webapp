@@ -61,11 +61,11 @@ jobs:
       # - name: Init Packer
       #   run: packer init packer/custom-image.pkr.hcl
 
-      - name: Build image
-        run: packer build ./packer/.
-        env: 
-          name: Building custom image with Packer
-          runs-on: ubuntu-latest
+      # - name: Build image
+      #   run: packer build ./packer/.
+      #   env: 
+      #     name: Building custom image with Packer
+      #     runs-on: ubuntu-latest
 
       - id: 'secrets'
         uses: 'google-github-actions/get-secretmanager-secrets@v2'
