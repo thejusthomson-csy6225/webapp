@@ -10,6 +10,8 @@ jobs:
     name: Testing Maven
     runs-on: ubuntu-latest
     env:
+      PROJECT_ID: ${{vars.PROJECT_ID}}
+      TOPIC_ID: ${{vars.TOPIC_ID}}
       MYSQL_DATABASE_URL: ${{secrets.MYSQL_DATABASE_URL}}
       MYSQL_DATABASE: ${{secrets.MYSQL_DATABASE}}
       MYSQL_DATABASE_USERNAME: ${{secrets.MYSQL_DATABASE_USERNAME}}

@@ -11,8 +11,6 @@ jobs:
     name: Packer Validate
     runs-on: ubuntu-latest
     env:
-      PROJECT_ID: ${{vars.PROJECT_ID}}
-      TOPIC_ID: ${{secrets.TOPIC_ID}}
       PKR_VAR_project_id: ${{vars.PROJECT_ID}}
       PKR_VAR_source_image_family: ${{vars.SOURCE_IMAGE_FAMILY}}
       PKR_VAR_zone: ${{vars.ZONE}}
