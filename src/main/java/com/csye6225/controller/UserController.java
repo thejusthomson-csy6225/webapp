@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/v1/user")
+@RequestMapping("/v2/user")
 public class UserController {
     private final UserService userService;
     private final SecurityHandler securityHandler;
