@@ -98,7 +98,7 @@ jobs:
             --create-disk=image=${{vars.IMAGE_BASE_PATH}}/${{env.SOURCE_IMAGE}},size=${{vars.DISK_SIZE}},boot=true,type=${{vars.DISK_TYPE}},auto-delete=yes,kms-key=${{steps.secrets.outputs.KMS_KEY}}  \
             --network=${{vars.VPC_NETWORK}} \
             --subnet=${{vars.VPC_SUBNETWORK}} \
-            --metadata startup-script="echo 'MYSQL_DATABASE_URL=${{steps.secrets.outputs.DB_URL}}' > .env && echo 'MYSQL_DATABASE_USERNAME=${{steps.secrets.outputs.DB_NAME}}' >> .env && echo 'MYSQL_DATABASE_PASSWORD=${{steps.secrets.outputs.DB_PASSWORD}}' >> .env && sudo mv .env /opt/ && sudo chown csye6225:csye6225 /opt/.env && sudo setenforce 0 && sudo systemctl daemon-reload && sudo systemctl restart webapp-launch.service" \
+            --metadata startup-script="echo 'MYSQL_DATABASE_URL=${{steps.secrets.outputs.DB_URL}}' > .env && echo 'MYSQL_DATABASE_USERNAME=${{steps.secrets.outputs.DB_NAME}}' >> .env && echo 'MYSQL_DATABASE_PASSWORD=${{steps.secrets.outputs.DB_PASSWORD}}' >> .env && 'PROJECT_ID=${{vars.PROJECT_ID}}' >> .env && 'TOPIC_ID= ${{vars.TOPIC_ID}}' >> .env && sudo mv .env /opt/ && sudo chown csye6225:csye6225 /opt/.env && sudo setenforce 0 && sudo systemctl daemon-reload && sudo systemctl restart webapp-launch.service" \
             --service-account ${{secrets.SERVICE_ACCOUNT_EMAIL}} \
             --tags=vm-instance
 
