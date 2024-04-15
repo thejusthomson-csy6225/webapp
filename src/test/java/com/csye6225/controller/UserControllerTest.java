@@ -27,7 +27,7 @@ class UserControllerTest {
     @PostConstruct
     void setUp() {
         RestAssured.port = port;
-        RestAssured.baseURI = "http://localhost/v1/user";
+        RestAssured.baseURI = "http://localhost/v2/user";
     }
 
     @Test
